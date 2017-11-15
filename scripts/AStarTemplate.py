@@ -24,9 +24,17 @@ goal which travels through the current node.  By iterating the algorithm through
 Authors: Wikipedia, Connor Flanigan
 """
 
+
+def __init__(self):
+    kDistance = .75
+    kTurn = .25
+
+
+
+
 #it's recommended that start is a poseStamped msg and goal is a pose msg, RViz likes using that for visualization.
 def aStar(start,goal):
-    """
+    
 
 
     closedset = the empty set    # The set of nodes already evaluated.
@@ -73,7 +81,7 @@ def aStar(start,goal):
                     add neighbor to openset
 
     return failure #if the program runs out of nodes to check before it finds the goal, then a solution does not exist
-"""
+
 # Starting from the goal, work backwards to find the start.  We recommend returning a path nav_msgs, which is an array of PoseStamped with a header
 def reconstruct_path(came_from,current):
 
@@ -93,7 +101,11 @@ def reconstruct_path(came_from,current):
     return total_path
 
 def heuristic_cost_estimate(start, goal):
-	return #if there were no obstacles in the way of the robot, what is the shortest path to the goal?  Return that value
+
+	return kDistance*distance_calculation(start, goal) + kTurn*(angle_pose_to_path(startpose, goalpose) + angle_path_to_pose(startpose, goalpose))
+    #if there were no obstacles in the way of the robot, what is the shortest path to the goal?  Return that value
+
+
 
 def distance_calculation(startpose, goalpose):
     startx = startpose.pose.pose.position.x
