@@ -25,8 +25,18 @@ goal which travels through the current node.  By iterating the algorithm through
 Authors: Wikipedia, Connor Flanigan
 """
 
+def newPose (parent, x, y)
+	poseOut = Pose()
+	poseOut.position.x = x
+	poseOut.position.y = y
+	poseout.position.z = 0
+	poseOut.orientation.x = 0
+	poseOut.orientation.y = 0
+	poseOut.orientation.z = 1
+	poseOut.orientation.w = math.atan2((y-parent.y)/(x-parent.x))
+
 class node(object):
-    def __init__(self, x, y, isOccupied, g, h):
+    def __init__(self, x, y, isOccupied, g, h, parent):
         self.priority = priority
         self.description = description
         self.x = x
@@ -36,6 +46,8 @@ class node(object):
 	self.g = previousG + 1
         self.f = self.G + self.H)
         self.isOccupied = isOccupied
+	self.parent = parent
+	self.pose = newPose(parent,x,y)
         
         return
     def __cmp__(self, other):
@@ -178,10 +190,10 @@ def angle_path_to_pose(startpose, goalpose):
 def neighbor_nodes(currentNode):
 	adjacent = []
 	for i in range(-1, 2):
-		for j in range (-1, 3)	
-			if not getWall(currentNode.x+i, currentNode.y+j)
-			adjacent.append(node(currentNode.x+i, currentNode.y+j, False, gValueFunction(currentNodePosition, i, j), heuristic_cost_estimate(currentNode))
-
+		for j in range (-1, 2):
+			if not getWall(currentNode.x+i, currentNode.y+j):
+				adjacent.append(node(currentNode.x+i, currentNode.y+j, False, gValueFunction(currentNode, i, j), heuristic_cost_estimate(currentNode.pose, newPose (currentNode, currentNode.x+i, currentNode.y+j)), currentNode)
+	return adjacent 
 	
 def dist_between(current,neighbor):
 	return math.sqrt((neighbor.pose.position.x - current.pose.position.x)**2 + (neighbor.pose.position.y - current.pose.position.y)**2)
