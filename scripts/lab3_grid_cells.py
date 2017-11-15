@@ -13,8 +13,15 @@ import rospy, tf, math
 import AStarTemplate
 
 
+class globalValues(object):
+    def __init__():
+        _offsetX=offsetX
+        _offsetY=
+        _resolution
+        return
 
-
+    def __cmp__(self, other):
+        return cmp(self.priority, other.priority)
 
 def __init():
      global mapDataOut
@@ -39,7 +46,7 @@ def mapCallBack(data):
 
     resolution = data.info.resolution
     mapData = data.data
-    print(mapData)
+    #print(mapData)
     print(len(mapData))
     width = data.info.width
     height = data.info.height
@@ -49,13 +56,21 @@ def mapCallBack(data):
     reshapedMap = np.reshape(a, (height, width))
     offsetX = data.info.origin.position.x
     offsetY = data.info.origin.position.y
-    print data.info
+    #print data.info
+
+class mapData:
+    def __init__(self):
+        self._offsetX = offsetX
+        self._offsetY = offsetY
+        self._resolution = resolution
+
 
 def gridFromPose(pose):
     gridx = int((pose.position.x - offsetX - (.5 * resolution)) / resolution)
     gridy = int((pose.position.y - offsetY - (.5 * resolution)) / resolution)
 
 def readGoal(goal):
+    print("read goal")
     global goalX
     global goalY
     goalX= goal.pose.position.x
@@ -70,6 +85,7 @@ def readGoal(goal):
     poseGoal.orientation = goal.pose.orientation
     return poseGoal
 def readStart(startPos):
+    print("read start")
     global startPosX
     global startPosY
     startPosX = startPos.pose.pose.position.x
@@ -111,8 +127,9 @@ def publishWalls():
             if getWall(i,j):
 
                 data.cells.append(addScaledPoint(j,i))
-                print("Wrote cell at"+repr(i)+", "+repr(j))
+                #print("Wrote cell at"+repr(i)+", "+repr(j))
 
+    print("Wrote wall cells")
     publishCells(wallpub,data)
 
 
@@ -154,8 +171,8 @@ def run():
     pubway = rospy.Publisher("/waypoints", GridCells, queue_size=1)
     checkedpub = rospy.Publisher("/checked", GridCells, queue_size=1)
     pubfrontier = rospy.Publisher("/frontier", GridCells, queue_size=1)
-    goal_sub = rospy.Subscriber('move_base_simple/goal', PoseStamped, readGoal, queue_size=1) #change topic for best results
-    start_sub = rospy.Subscriber('initialpose', PoseWithCovarianceStamped, readStart, queue_size=1) #change topic for best results
+    goal_sub = rospy.Subscriber('/move_base_simple/goal2', PoseStamped, readGoal, queue_size=1) #change topic for best results
+    start_sub = rospy.Subscriber('/initialpose2', PoseWithCovarianceStamped, readStart, queue_size=1) #change topic for best results
     
    
 
@@ -167,7 +184,8 @@ def run():
 
     while (1 and not rospy.is_shutdown()):
         publishWalls() #publishing map data every 2 seconds
-        AstarTemplate.aStar(readStart, readGoal)
+        astar = AStarTemplate()
+        astar.aStar(poseStart, poseGoal, globalValues())
 
         rospy.sleep(1)
         print("Complete")

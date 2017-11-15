@@ -30,27 +30,35 @@ def newPose (parent, x, y):
     poseOut = Pose()
     poseOut.position.x = x
     poseOut.position.y = y
-    poseout.position.z = 0
+    poseOut.position.z = 0
     poseOut.orientation.x = 0
     poseOut.orientation.y = 0
     poseOut.orientation.z = 1
     poseOut.orientation.w = math.atan2((y-parent.y)/(x-parent.x))
 
 class node(object):
-    def __init__(self, x, y, isOccupied, g, h, parent):
+    def __init__(self, x, y, isOccupied, parent):
         self.priority = priority
         self.description = description
         self.x = x
         self.y = y
         self.parent = None
 
-        self.h = heuristicFunction(self)
-        self.g = previousG + 1
-        self.f = self.G + self.H
+        if parent is not None:
+            self.pose = newPose(parent, x, y)
+        else:
+            self.pose = startPose
+
+        self.h = heuristic_cost_estimate(self.pose, goalPose)
+        self.g = g
+        self.f = self.g + self.h
 
         self.isOccupied = isOccupied
         self.parent = parent
-        self.pose = newPose(parent,x,y)
+
+
+
+
         
         return
     def __cmp__(self, other):
@@ -59,8 +67,28 @@ class node(object):
 #things to subscribe to: /move_base_simple/goal, /geometry_msgs/Pose
 
 def __init__(self):
+    global kDistance
+    global kTurn
     kDistance = .75
     kTurn = .25
+
+def convertMapPoseToGridPose(pose):
+    outPose = Pose()
+    outPose.position.x=int((pose.position.x - offsetX - (.5 * resolution)) / resolution)
+    outPose.position.y=int((pose.position.y - offsetY - (.5 * resolution)) / resolution)
+
+    q_map = [pose.orientation.x,
+                 pose.orientation.y,
+                 pose.orientation.z,
+                 pose._current.orientation.w]
+
+    (roll_map, pitch_map, yaw_map) = euler_from_quaternion(q_map)
+
+    #round arbitrary input angle to nearest 45 degrees
+    yaw_new = int(math.pi/4 * round(float(yaw_map)/(math.pi/4)))
+    outPose.orientation = tf.transformations.quaternion_from_euler(roll_map, pitch_map, yaw_new)
+
+
 
 
 def getWall(x,y):
@@ -70,18 +98,36 @@ def getWall(x,y):
     else:
         return True
 
+def startNodeFromPose(pose):
+    global startPose
+    startPose = convertMapPoseToGridPose(pose)
+    startNode = node.__init__(startPose.x, startPose.y, False, 0, heuristic_cost_estimate(startPose, goalPose),None)
+    return startNode
+
 
 #it's recommended that start is a poseStamped msg and goal is a pose msg, RViz likes using that for visualization.
-def aStar(start,goal):
-    
+def aStar(start,goal,mapData):
+    global offsetX
+    global offsetY
+    global resolution
+    global goalPose
+    offsetX = mapData._offsetX
+    offsetY = mapData._offsetY
+    resolution = mapData._resolution
+    goalPose = convertMapPoseToGridPose(goal)
+
+
 
 
     closedset = set()    # The set of nodes already evaluated.
+    global opensetPoints
+    global closedsetPoints
     openset = []  #this is a heapq
     heapq.heapify(openset)
     heapq.heappush = (heap, (distance_calculation(start, goal), start))  # The set of tentative nodes to be evaluated, initially containing the start node.  The nodes in this set are the nodes that make the frontier between the closed
        # set and all other nodes.
 
+    openset.append(startNodeFromPose(start))
 
     came_from = []    # The map of navigated nodes. TODO
 
@@ -103,11 +149,11 @@ def aStar(start,goal):
     f_score[start] = (g_score[start] + heuristic_cost_estimate(start, goal))
 
 
-    while (openset is not empty):    # while there are still nodes that have not been checked, continually run the algorithm
+    while (len(openset) != 0):    # while there are still nodes that have not been checked, continually run the algorithm
 
         f, current = heapq.heappop(self.opened) # this is the most promising node of all nodes in the open set
 
-        if (current == goal):                                               # if the best possible path found leads to the goal, it is the best possible path that the robot could discover
+        if (current.x==goalPose.x && current.y==goalPose.y):                                               # if the best possible path found leads to the goal, it is the best possible path that the robot could discover
             return reconstruct_path(came_from, goal)
 
         #remove current from openset                  # mark this node as having been evaluated
@@ -128,20 +174,35 @@ def aStar(start,goal):
                 f_score[neighbor] = g_score[neighbor] + heuristic_cost_estimate(neighbor, goal) # The F score is the G score and the heuristic
                 if (neighbor not in openset):                                                      # add this neighbor to the frontier if it was not in it already
                     heapq.heappush(openset,(fscore[neighbor], neighbor)) #add neighbot ghbor to openset
+        for node in openset:
+            opensetPoints = GridCells()
+            opensetPoints.cells.append(addScaledPoint(node.y, node.x))
+        for node in closedset:
+            closedsetPoints = GridCells()
+            closedsetPoints.cells.append(addScaledPoint(node.y, node.x))
 
     return failure #if the program runs out of nodes to check before it finds the goal, then a solution does not exist
 
+def addScaledPoint(x,y):
+    pointToAdd = Point()
+    pointToAdd.x = (x * resolution) + offsetX + (.5 * resolution)
+    pointToAdd.y = (y * resolution) + offsetY + (.5 * resolution)
+    pointToAdd.z = 0
+    return pointToAdd
+
+
 # Starting from the goal, work backwards to find the start.  We recommend returning a path nav_msgs, which is an array of PoseStamped with a header
-def reconstruct_path(came_from,current):
+def reconstruct_path():
 
     # start by adding goal to the path
-    total_path = [current]
+    total_path = [goalPose]
+    current = goalPose
 
     # run while reconstruct_path hasn't reached the start
-    while current in came_from:
+    while current.parent is not None
 
         # The current node is now the node that leads to the previous node
-        current = came_from[current]
+        current = current.parent
 
         # add the current node to the front of the list
         total_path.append(current)
@@ -151,7 +212,7 @@ def reconstruct_path(came_from,current):
 
 def heuristic_cost_estimate(start, goal):
 
-    return kDistance*distance_calculation(start, goal) + kTurn*(angle_pose_to_path(startpose, goalpose) + angle_path_to_pose(startpose, goalpose))
+    return kDistance*distance_calculation(start, goal) + kTurn*(angle_pose_to_path(startpose, goalpose) + kTurn*(angle_path_to_pose(startpose, goalpose)))
     #if there were no obstacles in the way of the robot, what is the shortest path to the goal?  Return that value
 
 
@@ -202,7 +263,7 @@ def neighbor_nodes(currentNode):
     for i in range(-1, 2):
         for j in range (-1, 2):
             if not getWall(currentNode.x+i, currentNode.y+j):
-                adjacent.append(node(currentNode.x+i, currentNode.y+j, False, gValueFunction(currentNode, i, j), heuristic_cost_estimate(currentNode.pose, newPose (currentNode, currentNode.x+i, currentNode.y+j)), currentNode))
+                adjacent.append(node(currentNode.x+i, currentNode.y+j, False, gValueFunction(currentNode, i, j), currentNode))
     return adjacent
 
 
