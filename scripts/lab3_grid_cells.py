@@ -63,15 +63,26 @@ def readGoal(goal):
     goalY= goal.pose.position.y
     print goal.pose
     # Start Astar
-
-
+    global poseGoal
+    poseGoal = Pose()
+    poseGoal.position.x = goalX
+    poseGoal.position.y = goalY
+    poseGoal.position.z = 0
+    poseGoal.orientation = goal.pose.orientation
+    return poseGoal
 def readStart(startPos):
     global startPosX
     global startPosY
     startPosX = startPos.pose.pose.position.x
     startPosY = startPos.pose.pose.position.y
     print startPos.pose.pose
-
+    global poseStart
+    poseStart = Pose()
+    poseStart.position.x = startPosX
+    poseStart.position.y = startPosY
+    poseStart.position.z = 0
+    poseStart.orientation = startPos.pose.pose.orientation
+    return poseStart
 def aStar(start,goal):
     pass
     # create a new instance of the map
@@ -162,7 +173,8 @@ def run():
 
     while (1 and not rospy.is_shutdown()):
         publishWalls() #publishing map data every 2 seconds
-        AstarTemplate.aStar(readStart.pose.pose, readGoal)
+
+        AStarTemplate.aStar(poseStart, poseGoal)  #start then goal
         rospy.sleep(1)
         print("Complete")
         time=time+1

@@ -76,7 +76,7 @@ def aStar(start,goal):
 
 
     closedset = set()    # The set of nodes already evaluated.
-    openset = []
+    openset = []  #this is a heapq
     heapq.heapify(openset)
     heapq.heappush = (heap, (distance_calculation(start, goal), start))  # The set of tentative nodes to be evaluated, initially containing the start node.  The nodes in this set are the nodes that make the frontier between the closed
        # set and all other nodes.
@@ -126,7 +126,7 @@ def aStar(start,goal):
                 g_score[neighbor] = tentative_g_score                                           # The G score of the node is what we tentatively calculated earlier
                 f_score[neighbor] = g_score[neighbor] + heuristic_cost_estimate(neighbor, goal) # The F score is the G score and the heuristic
                 if (neighbor not in openset):                                                      # add this neighbor to the frontier if it was not in it already
-                    openset.append(neighbor)  add neighbor to openset
+                    heapq.heappush(openset,(fscore[neighbor], neighbor)) #add neighbot ghbor to openset
 
     return failure #if the program runs out of nodes to check before it finds the goal, then a solution does not exist
 
@@ -201,7 +201,7 @@ def neighbor_nodes(currentNode):
     for i in range(-1, 2):
         for j in range (-1, 2):
             if not getWall(currentNode.x+i, currentNode.y+j):
-                adjacent.append(node(currentNode.x+i, currentNode.y+j, False, gValueFunction(currentNode, i, j), heuristic_cost_estimate(currentNode.pose, newPose (currentNode, currentNode.x+i, currentNode.y+j)), currentNode)
+                adjacent.append(node(currentNode.x+i, currentNode.y+j, False, gValueFunction(currentNode, i, j), heuristic_cost_estimate(currentNode.pose, newPose (currentNode, currentNode.x+i, currentNode.y+j)), currentNode))
     return adjacent
 
 
