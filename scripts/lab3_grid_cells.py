@@ -133,6 +133,8 @@ def run():
     global pub
     global wallpub
     global checkedpub
+    global start_sub
+    global goal_sub
     rospy.init_node('lab3')
     sub = rospy.Subscriber("/map", OccupancyGrid, mapCallBack)
     pub = rospy.Publisher("/map_check", GridCells, queue_size=1)
@@ -142,7 +144,7 @@ def run():
     checkedpub = rospy.Publisher("/checked", GridCells, queue_size=1)
     pubfrontier = rospy.Publisher("/frontier", GridCells, queue_size=1)
     goal_sub = rospy.Subscriber('move_base_simple/goal', PoseStamped, readGoal, queue_size=1) #change topic for best results
-    goal_sub = rospy.Subscriber('initialpose', PoseWithCovarianceStamped, readStart, queue_size=1) #change topic for best results
+    start_sub = rospy.Subscriber('initialpose', PoseWithCovarianceStamped, readStart, queue_size=1) #change topic for best results
     
    
 
@@ -154,7 +156,7 @@ def run():
 
     while (1 and not rospy.is_shutdown()):
         publishWalls() #publishing map data every 2 seconds
-        AstarTemplate.aStar(readStart.pose.pose, readGoal)
+        AstarTemplate.aStar(readStart, readGoal)
         rospy.sleep(1)
         print("Complete")
         time=time+1
