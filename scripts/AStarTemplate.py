@@ -201,7 +201,7 @@ def neighbor_nodes(currentNode):
     adjacent = []
     for i in range(-1, 2):
         for j in range (-1, 2):
-            if not (i+j==0):
+            if not (i==0 and j==0):
                 if not getWall(currentNode.x+i, currentNode.y+j):
                     adjacent.append(node(currentNode.x+i, currentNode.y+j, False, gValueFunction(currentNode, i, j), heuristic_cost_estimate(currentNode.pose, newPose (currentNode, currentNode.x+i, currentNode.y+j)), currentNode))
     return adjacent
