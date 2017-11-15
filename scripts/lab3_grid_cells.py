@@ -7,19 +7,24 @@ from geometry_msgs.msg import Twist, Point, Pose, PoseStamped, PoseWithCovarianc
 from nav_msgs.msg import Odometry, OccupancyGrid
 from kobuki_msgs.msg import BumperEvent
 import tf
-import numpy
+import numpy as np
 import math 
-import rospy, tf, numpy, math
+import rospy, tf, math
 import AStarTemplate
 
 
 
 
 
+def __init():
+     global mapDataOut
+     mapDataOut = GridCells()
 
 # reads in global map
 def mapCallBack(data):
-    global mapData
+    print("Map callback executed")
+    global mapDataIn
+    global reshapedMap
     global width
     global height
     global mapgrid
@@ -27,13 +32,26 @@ def mapCallBack(data):
     global offsetX
     global offsetY
     mapgrid = data
+
     resolution = data.info.resolution
-    mapData = data.data
+    mapDataIn = data.data
+    print(mapDataIn)
+    print(len(mapDataIn))
     width = data.info.width
     height = data.info.height
+    print(width)
+    print(height)
+    a = np.array(data.data)
+    reshapedMap = np.reshape(a, (width,height))
     offsetX = data.info.origin.position.x
     offsetY = data.info.origin.position.y
     print data.info
+
+def gridFromPose(pose):
+    gridx = int((pose.position.x - offsetX - (.5 * resolution)) / resolution)
+    gridy = int((pose.position.y - offsetY - (.5 * resolution)) / resolution)
+
+
 
 def readGoal(goal):
     global goalX
@@ -105,7 +123,7 @@ def run():
 
 
     while (1 and not rospy.is_shutdown()):
-        publishCells(mapData) #publishing map data every 2 seconds
+        publishCells(mapDataOut) #publishing map data every 2 seconds
         rospy.sleep(2)  
         print("Complete")
     
@@ -113,6 +131,7 @@ def run():
 
 if __name__ == '__main__':
     try:
+        __init()
         run()
     except rospy.ROSInterruptException:
         pass
