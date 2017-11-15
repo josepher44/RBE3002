@@ -21,6 +21,8 @@
               <caret line="143" column="32" lean-forward="true" selection-start-line="143" selection-start-column="32" selection-end-line="143" selection-end-column="32" />
               <folding>
                 <element signature="e#23#35#0" expanded="true" />
+                <marker date="1510781624497" expanded="true" signature="3047:4219" ph="..." />
+                <marker date="1510781624497" expanded="true" signature="4150:4219" ph="..." />
               </folding>
             </state>
           </provider>
@@ -29,8 +31,8 @@
       <file leaf-file-name="AStarTemplate.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/AStarTemplate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1230">
-              <caret line="79" column="21" lean-forward="false" selection-start-line="79" selection-start-column="21" selection-end-line="79" selection-end-column="21" />
+            <state relative-caret-position="346">
+              <caret line="206" column="0" lean-forward="true" selection-start-line="206" selection-start-column="0" selection-end-line="206" selection-end-column="0" />
               <folding>
                 <element signature="e#23#35#0" expanded="true" />
               </folding>
@@ -62,8 +64,8 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/scripts/AStarTemplate.py" />
         <option value="$PROJECT_DIR$/scripts/lab3_grid_cells.py" />
+        <option value="$PROJECT_DIR$/scripts/AStarTemplate.py" />
       </list>
     </option>
   </component>
@@ -171,6 +173,8 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#23#35#0" expanded="true" />
+            <marker date="1510781624497" expanded="true" signature="3047:4219" ph="..." />
+            <marker date="1510781624497" expanded="true" signature="4150:4219" ph="..." />
           </folding>
         </state>
       </provider>
@@ -191,6 +195,8 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#23#35#0" expanded="true" />
+            <marker date="1510781624497" expanded="true" signature="3047:4219" ph="..." />
+            <marker date="1510781624497" expanded="true" signature="4150:4219" ph="..." />
           </folding>
         </state>
       </provider>
@@ -211,6 +217,8 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#23#35#0" expanded="true" />
+            <marker date="1510781624497" expanded="true" signature="3047:4219" ph="..." />
+            <marker date="1510781624497" expanded="true" signature="4150:4219" ph="..." />
           </folding>
         </state>
       </provider>
@@ -251,6 +259,8 @@
           <caret line="9" column="12" lean-forward="true" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="12" />
           <folding>
             <element signature="e#23#35#0" expanded="true" />
+            <marker date="1510781624497" expanded="true" signature="3047:4219" ph="..." />
+            <marker date="1510781624497" expanded="true" signature="4150:4219" ph="..." />
           </folding>
         </state>
       </provider>
@@ -261,6 +271,8 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#23#35#0" expanded="true" />
+            <marker date="1510781624497" expanded="true" signature="3047:4219" ph="..." />
+            <marker date="1510781624497" expanded="true" signature="4150:4219" ph="..." />
           </folding>
         </state>
       </provider>
@@ -299,14 +311,16 @@
           <caret line="143" column="32" lean-forward="true" selection-start-line="143" selection-start-column="32" selection-end-line="143" selection-end-column="32" />
           <folding>
             <element signature="e#23#35#0" expanded="true" />
+            <marker date="1510781624497" expanded="true" signature="3047:4219" ph="..." />
+            <marker date="1510781624497" expanded="true" signature="4150:4219" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/AStarTemplate.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1230">
-          <caret line="79" column="21" lean-forward="false" selection-start-line="79" selection-start-column="21" selection-end-line="79" selection-end-column="21" />
+        <state relative-caret-position="346">
+          <caret line="206" column="0" lean-forward="true" selection-start-line="206" selection-start-column="0" selection-end-line="206" selection-end-column="0" />
           <folding>
             <element signature="e#23#35#0" expanded="true" />
           </folding>

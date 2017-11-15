@@ -144,6 +144,9 @@ def run():
     goal_sub = rospy.Subscriber('move_base_simple/goal', PoseStamped, readGoal, queue_size=1) #change topic for best results
     goal_sub = rospy.Subscriber('initialpose', PoseWithCovarianceStamped, readStart, queue_size=1) #change topic for best results
     
+   
+
+
     # wait a second for publisher, subscribers, and TF
     rospy.sleep(1)
     time=0
@@ -151,6 +154,7 @@ def run():
 
     while (1 and not rospy.is_shutdown()):
         publishWalls() #publishing map data every 2 seconds
+        AstarTemplate.aStar(readStart.pose.pose, readGoal)
         rospy.sleep(1)
         print("Complete")
         time=time+1
