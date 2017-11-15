@@ -34,7 +34,7 @@ class node(object):
         self.parent = None
 	self.h = heuristicFunction(self)
 	self.g = previousG + 1
-        self.f = somefunction(self.G, self.H)
+        self.f = self.G + self.H)
         self.isOccupied = isOccupied
         
         return
@@ -49,7 +49,11 @@ def __init__(self):
 
 def getWall(x,y)
 	location = GridCells.width*y+x
-	return OccupencyGrid.data[location]
+	if OccupencyGrid.data[location]<50
+	return False
+	else
+	return True
+	
 
 
 #it's recommended that start is a poseStamped msg and goal is a pose msg, RViz likes using that for visualization.
@@ -175,7 +179,8 @@ def neighbor_nodes(currentNode):
 	adjacent = []
 	for i in range(-1, 2):
 		for j in range (-1, 3)	
-			adjacent.append(node(currentNode.x+i, currentNode.y+j, getWall(currentNode.x+i, currentNode.y+j), currentNode.g+1, HeuristicFunction(currentNode))
+			if not getWall(currentNode.x+i, currentNode.y+j)
+			adjacent.append(node(currentNode.x+i, currentNode.y+j, False, gValueFunction(currentNodePosition, i, j), heuristic_cost_estimate(currentNode))
 
 	
 def dist_between(current,neighbor):
