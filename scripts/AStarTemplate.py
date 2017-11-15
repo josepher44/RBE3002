@@ -34,7 +34,7 @@ class node(object):
         self.parent = None
 	self.h = heuristicFunction(self)
 	self.g = previousG + 1
-        self.f = self.G + self.H)
+        self.f = self.G + self.H
         self.isOccupied = isOccupied
         
         return
@@ -47,7 +47,7 @@ def __init__(self):
     kDistance = .75
     kTurn = .25
 
-def getWall(x,y)
+def getWall(x,y):
 	location = GridCells.width*y+x
 	if OccupencyGrid.data[location]<50
 	return False

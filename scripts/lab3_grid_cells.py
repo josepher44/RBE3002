@@ -10,7 +10,7 @@ import tf
 import numpy as np
 import math 
 import rospy, tf, math
-import AStarTemplate
+#import AStarTemplate
 
 
 
@@ -18,12 +18,15 @@ import AStarTemplate
 
 def __init():
      global mapDataOut
+     global wallDataOut
      mapDataOut = GridCells()
+     wallDataOut = GridCells()
+
 
 # reads in global map
 def mapCallBack(data):
     print("Map callback executed")
-    global mapDataIn
+    global mapData
     global reshapedMap
     global width
     global height
@@ -34,9 +37,9 @@ def mapCallBack(data):
     mapgrid = data
 
     resolution = data.info.resolution
-    mapDataIn = data.data
-    print(mapDataIn)
-    print(len(mapDataIn))
+    mapData = data.data
+    print(mapData)
+    print(len(mapData))
     width = data.info.width
     height = data.info.height
     print(width)
@@ -63,7 +66,6 @@ def readGoal(goal):
 
 
 def readStart(startPos):
-
     global startPosX
     global startPosY
     startPosX = startPos.pose.pose.position.x
@@ -82,50 +84,84 @@ def aStar(start,goal):
 
 #publishes map to rviz using gridcells type
 
-def publishCells(grid):
+def getWall(x,y):
+    if reshapedMap[x,y]<50:
+        return False
+    else:
+        return True
+
+
+
+def publishWalls():
+
+
+    wallDataOut.header.frame_id = 'map'
+    wallDataOut.cell_width = resolution
+    wallDataOut.cell_height = resolution
+
+    for i in range(0,width):
+        for j in range(0,height):
+            if getWall(i,j):
+
+                wallDataOut.cells.append(addScaledPoint(i,j))
+                print("Wrote cell at"+repr(i)+", "+repr(j))
+
+    wallpub.publish(wallDataOut)
+
+def addScaledPoint(x,y):
+    pointToAdd = Point()
+    pointToAdd.x = (x * resolution) + offsetX + (.5 * resolution)
+    pointToAdd.y = (y * resolution) + offsetY + (.5 * resolution)
+    pointToAdd.z = 0
+    return pointToAdd
+
+
+def publishCells(grid, publisher):
     global pub
     print "publishing"
 
     # resolution and offset of the map
     k=0
-    cells = GridCells()
-    cells.header.frame_id = 'map'
-    cells.cell_width = resolution 
-    cells.cell_height = resolution
+    mapDataOut.header.frame_id = 'map'
+    mapDataOut.cell_width = resolution
+    mapDataOut.cell_height = resolution
+    pointToAdd = Point()
 
-    for i in range(1,512): #height should be set to hieght of grid
-        k=k+1
-        for j in range(1,480): #width should be set to width of grid
-            k=k+1
-            #print k # used for debugging
-            if (grid[k] == 100):
-                point=Point()
-                point.x=(j*resolution)+offsetX + (1.5 * resolution) # added secondary offset 
-                point.y=(i*resolution)+offsetY - (.5 * resolution) # added secondary offset ... Magic ?
-                point.z=0
-                cells.cells.append(point)
-    pub.publish(cells)           
+    pointToAdd.x = (1 * resolution) + offsetX + (.5 * resolution)
+    pointToAdd.y = (1 * resolution) + offsetY + (.5 * resolution)
+
+    pointToAdd.z = 0
+    mapDataOut.cells.append(pointToAdd)
+    print("Wrote cell at"+repr(1)+", "+repr(1))
+    publisher.publish(mapDataOut)
+
+
 
 #Main handler of the project
 def run():
     global pub
+    global wallpub
     rospy.init_node('lab3')
     sub = rospy.Subscriber("/map", OccupancyGrid, mapCallBack)
-    pub = rospy.Publisher("/map_check", GridCells, queue_size=1)  
+    pub = rospy.Publisher("/map_check", GridCells, queue_size=1)
+    wallpub = rospy.Publisher("/walls", GridCells, queue_size=1)
     pubpath = rospy.Publisher("/path", GridCells, queue_size=1) # you can use other types if desired
     pubway = rospy.Publisher("/waypoints", GridCells, queue_size=1)
+    pubchecked = rospy.Publisher("/checked", GridCells, queue_size=1)
+    pubfrontier = rospy.Publisher("/frontier", GridCells, queue_size=1)
     goal_sub = rospy.Subscriber('move_base_simple/goal', PoseStamped, readGoal, queue_size=1) #change topic for best results
     goal_sub = rospy.Subscriber('initialpose', PoseWithCovarianceStamped, readStart, queue_size=1) #change topic for best results
     
     # wait a second for publisher, subscribers, and TF
     rospy.sleep(1)
-
+    time=0
 
 
     while (1 and not rospy.is_shutdown()):
-        publishCells(mapDataOut) #publishing map data every 2 seconds
-        rospy.sleep(2)  
+        publishWalls() #publishing map data every 2 seconds
+        rospy.sleep(1)
         print("Complete")
+        time=time+1
     
 
 
