@@ -25,7 +25,7 @@ goal which travels through the current node.  By iterating the algorithm through
 Authors: Wikipedia, Connor Flanigan
 """
 
-def newPose (parent, x, y)
+def newPose (parent, x, y):
     poseOut = Pose()
     poseOut.position.x = x
     poseOut.position.y = y
@@ -43,13 +43,13 @@ class node(object):
         self.y = y
         self.parent = None
 
-    self.h = heuristicFunction(self)
-    self.g = previousG + 1
+        self.h = heuristicFunction(self)
+        self.g = previousG + 1
         self.f = self.G + self.H
 
         self.isOccupied = isOccupied
-    self.parent = parent
-    self.pose = newPose(parent,x,y)
+        self.parent = parent
+        self.pose = newPose(parent,x,y)
         
         return
     def __cmp__(self, other):
@@ -62,11 +62,11 @@ def __init__(self):
     kTurn = .25
 
 
-def getWall(x,y)
+def getWall(x,y):
     location = GridCells.width*y+x
-    if OccupencyGrid.data[location]<50
+    if OccupencyGrid.data[location]<50:
         return False
-    else
+    else:
         return True
 
 
@@ -78,9 +78,13 @@ def aStar(start,goal):
     closedset = set()    # The set of nodes already evaluated.
     openset = []
     heapq.heapify(openset)
-    heapq.heappush = (heap, (distance_calculation(start, goal), start)  # The set of tentative nodes to be evaluated, initially containing the start node.  The nodes in this set are the nodes that make the frontier between the closed
+    heapq.heappush = (heap, (distance_calculation(start, goal), start))  # The set of tentative nodes to be evaluated, initially containing the start node.  The nodes in this set are the nodes that make the frontier between the closed
        # set and all other nodes.
-    came_from = the empty map    # The map of navigated nodes. TODO
+
+
+    came_from = []    # The map of navigated nodes. TODO
+
+
 
     # The g_score of a node is the distance of the shortest path from the start to the node.
     # Start by assuming that all nodes that have yet to be processed cannot be reached
@@ -95,16 +99,14 @@ def aStar(start,goal):
 
     # heuristic_cost_estimate(a, b) is the shortest possible path between a and b, this can be euclidean, octodirectional, Manhattan, or something fancy based on how the machine moves
     # the best possible distance between the start and the goal will be the heuristic
-    f_score[start] = g_score[start] + heuristic_cost_estimate(start, goal)
+    f_score[start] = (g_score[start] + heuristic_cost_estimate(start, goal))
 
 
-    while openset is not empty                                          # while there are still nodes that have not been checked, continually run the algorithm
-
-        
+    while (openset is not empty):    # while there are still nodes that have not been checked, continually run the algorithm
 
         f, current = heapq.heappop(self.opened) # this is the most promising node of all nodes in the open set
 
-        if current = goal                                               # if the best possible path found leads to the goal, it is the best possible path that the robot could discover
+        if (current == goal):                                               # if the best possible path found leads to the goal, it is the best possible path that the robot could discover
             return reconstruct_path(came_from, goal)
 
         #remove current from openset                  # mark this node as having been evaluated
@@ -112,19 +114,19 @@ def aStar(start,goal):
         
         closedset.add(current) 
 
-        for each neighbor in neighbor_nodes(current) # re-evaluate each neighboring node
-            if neighbor in closedset
+        for neighbor in neighbor_nodes(current): # re-evaluate each neighboring node
+            if (neighbor in closedset):
                 continue
             tentative_g_score = g_score[current] + dist_between(current,neighbor) # create a new g_score for the current neighbor by adding the g_score from the current node and
                                                                                   # the distance to the neighbor
 
-            if neighbor not in openset or tentative_g_score < g_score[neighbor]                 # if the neighbor has not been evaluated yet, or if a better path to the neighbor has been found,
+            if (neighbor not in openset or tentative_g_score < g_score[neighbor]):                 # if the neighbor has not been evaluated yet, or if a better path to the neighbor has been found,
                                                                                                 # update the neighbor
                 came_from[neighbor] = current                                                   # The node to reach this node from in the best time is the current node
                 g_score[neighbor] = tentative_g_score                                           # The G score of the node is what we tentatively calculated earlier
                 f_score[neighbor] = g_score[neighbor] + heuristic_cost_estimate(neighbor, goal) # The F score is the G score and the heuristic
-                if neighbor not in openset                                                      # add this neighbor to the frontier if it was not in it already
-                    add neighbor to openset
+                if (neighbor not in openset):                                                      # add this neighbor to the frontier if it was not in it already
+                    openset.append(neighbor)  add neighbor to openset
 
     return failure #if the program runs out of nodes to check before it finds the goal, then a solution does not exist
 
