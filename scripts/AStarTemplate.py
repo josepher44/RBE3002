@@ -182,6 +182,15 @@ def neighbor_nodes(currentNode):
 			if not getWall(currentNode.x+i, currentNode.y+j)
 			adjacent.append(node(currentNode.x+i, currentNode.y+j, False, gValueFunction(currentNodePosition, i, j), heuristic_cost_estimate(currentNode))
 
+
+
+
+def gValueFunction(currentNode, i, j):
+    return kTurn*(atan2(currentNode.y-currentNode.parent.y, currentNode.x-currentNode.parent.x)-atan2(j, i)) + kDistance*math.sqrt(i**2+j**2)
+    #finds difference between next heading and current heading, multiplies by turn constant, adds to distance difficulty and returns
+
+
+
 	
 def dist_between(current,neighbor):
 	return math.sqrt((neighbor.pose.position.x - current.pose.position.x)**2 + (neighbor.pose.position.y - current.pose.position.y)**2)
