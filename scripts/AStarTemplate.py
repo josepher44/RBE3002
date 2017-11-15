@@ -26,6 +26,9 @@ Authors: Wikipedia, Connor Flanigan
 
 #it's recommended that start is a poseStamped msg and goal is a pose msg, RViz likes using that for visualization.
 def aStar(start,goal):
+    """
+
+
     closedset = the empty set    # The set of nodes already evaluated.
     openset = [start]            # The set of tentative nodes to be evaluated, initially containing the start node.  The nodes in this set are the nodes that make the frontier between the closed
 	                             # set and all other nodes.
@@ -70,7 +73,7 @@ def aStar(start,goal):
                     add neighbor to openset
 
     return failure #if the program runs out of nodes to check before it finds the goal, then a solution does not exist
-
+"""
 # Starting from the goal, work backwards to find the start.  We recommend returning a path nav_msgs, which is an array of PoseStamped with a header
 def reconstruct_path(came_from,current):
 
@@ -99,23 +102,35 @@ def distance_calculation(startpose, goalpose):
 
 def angle_pose_to_path(startpose, goalpose):
     #Calculates the angle from a start pose, to the path between the start pose and the goal pose
-    startQuat = startpose.pose.pose.quaternion
+    startQuat = startpose.pose.pose.orientation
     (rollStart, pitchStart, yawStart) = euler_from_quaternion(startQuat)
-
     startx = startpose.pose.pose.position.x
     starty = startpose.pose.pose.position.y
-
     endx = goalpose.pose.position.x
     endy = goalpose.pose.position.y
-
     deltax = endx-startx
     deltay = endy-starty
 
     travelAngle = math.atan2(deltay, deltax)
 
-    return yawEnd-yawStart
+    return travelAngle-yawStart
 
-    #Calculates the angle between the start pose of the robot, and the path the robot must travel in a straight line to reach the goal pose
+def angle_path_to_pose(startpose, goalpose):
+    #Calculates the angle from a path of travel between two poses, and the desired angle at the end pose
+    endQuat = goalpose.pose.orientation
+    (rollEnd, pitchEnd, yawEnd) = euler_from_quaternion(endQuat)
+    startx = startpose.pose.pose.position.x
+    starty = startpose.pose.pose.position.y
+    endx = goalpose.pose.position.x
+    endy = goalpose.pose.position.y
+    deltax = endx-startx
+    deltay = endy-starty
+
+    travelAngle = math.atan2(deltay, deltax)
+
+    return travelAngle-yawEnd
+
+
 
 def neighbor_nodes(current):
 	return #all nodes adjacent to the current node, this could be a list, an array, or any number of existing or custom data-types
@@ -129,36 +144,4 @@ some advice:
 
 	A) don't be like me and make this monstrosity
 
-"""
-def generateEdges(self):
-"""
-	y = 0
-	while y < self.size[1]:
-		x = 0
-		while x < self.size[0]:
-			j = y - 1
-			while j <= y + 1:
-				i = x - 1
-				while i <= x + 1:
-					if(conditions):
-						if (more conditions):
-							if (These many ifs were actually necessary without helper functions):
-								if (this isn't a joke):
-									if (don't let this be you):
-										#code went here
-					i += 1
-				j += 1
-			x += 1
-		y += 1
-
-	return
-"""
-"""
-
-	Remember, helper functions save lives
-
-	B) Several groups used lists to store a node class, but traversing in a for loop and calling a method on each with a line that looks like list(i).method(args)
-		By all logic, that should work, but in a lot of cases it seemed that all entries in the list had method(args) called on it.  It wasted a lot of time and effort,
-		so look for that if, for instance, your A* tells you to go in a straight line from the start to the end.
-	
 """
