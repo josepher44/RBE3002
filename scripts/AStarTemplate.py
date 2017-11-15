@@ -25,12 +25,31 @@ goal which travels through the current node.  By iterating the algorithm through
 Authors: Wikipedia, Connor Flanigan
 """
 
+class node(object):
+    def __init__(self, x, y, isOccupied, g, h):
+        self.priority = priority
+        self.description = description
+        self.x = x
+        self.y = y
+        self.parent = None
+	self.h = heuristicFunction(self)
+	self.g = previousG + 1
+        self.f = somefunction(self.G, self.H)
+        self.isOccupied = isOccupied
+        
+        return
+    def __cmp__(self, other):
+        return cmp(self.priority, other.priority)
+
+
 
 def __init__(self):
     kDistance = .75
     kTurn = .25
 
-
+def getWall(x,y)
+	location = GridCells.width*y+x
+	return OccupencyGrid.data[location]
 
 
 #it's recommended that start is a poseStamped msg and goal is a pose msg, RViz likes using that for visualization.
@@ -153,8 +172,12 @@ def angle_path_to_pose(startpose, goalpose):
 
 
 
-def neighbor_nodes(current):
-	return #all nodes adjacent to the current node, this could be a list, an array, or any number of existing or custom data-types
+def neighbor_nodes(currentNode):
+	adjacent = []
+	for i in range(-1, 2):
+		for j in range (-1, 3)	
+			adjacent.append(node(currentNode.x+i, currentNode.y+j, getWall(currentNode.x+i, currentNode.y+j), currentNode.g+1, HeuristicFunction(currentNode))
+	return listOfAdjacentCoordinates #all nodes adjacent to the current node, this could be a list, an array, or any number of existing or custom data-types
 	
 def dist_between(current,neighbor):
 	return #the distance necessary to travel to the neighbor from the current node

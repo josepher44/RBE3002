@@ -1,24 +1,7 @@
 import heapq
 
 
-class node(object):
-    def __init__(self, x, y, occupied):
-        self.priority = priority
-        self.description = description
-        self.x = x
-        self.y = y
-        self.parent = None
-	self.H = heuristicFunction(self)
-	self.G = previousG + 1
-        self.f = somefunction(self.G, self.H)
-        self.occupied = occupied
-        
-        return
-    def __cmp__(self, other):
-        return cmp(self.priority, other.priority)
-
-
-
+c
 
 class AStar(object):
 
