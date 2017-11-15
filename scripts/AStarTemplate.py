@@ -8,6 +8,7 @@ from nav_msgs.msg import Odometry, OccupancyGrid
 from kobuki_msgs.msg import BumperEvent
 from tf.transformations import euler_from_quaternion
 import tf
+import heapq
 import numpy
 import math
 import rospy, tf, numpy, math
@@ -37,21 +38,23 @@ def aStar(start,goal):
     
 
 
-    closedset = the empty set    # The set of nodes already evaluated.
-    openset = [start]            # The set of tentative nodes to be evaluated, initially containing the start node.  The nodes in this set are the nodes that make the frontier between the closed
-	                             # set and all other nodes.
-    came_from = the empty map    # The map of navigated nodes.
+    closedset = []    # The set of nodes already evaluated.
+    openset = []
+	heapq.heapify(openset)
+    heapq.heappush = (heap, (distance_calculation(start, goal), start)  # The set of tentative nodes to be evaluated, initially containing the start node.  The nodes in this set are the nodes that make the frontier between the closed
+       # set and all other nodes.
+    came_from = the empty map    # The map of navigated nodes. TODO
 
 	# The g_score of a node is the distance of the shortest path from the start to the node.
 	# Start by assuming that all nodes that have yet to be processed cannot be reached
-    g_score = map with default value of Infinity
+    g_score = math.inf
 
 	# The starting node has zero distance from start
     g_score[start] = 0
 
     # The f_score of a node is the estimated total cost from start to goal to the goal.  This is the sum of the g_score (shortest known path) and the h_score (best possible path).
     # assume same as g_score
-	f_score = map with default value of Infinity
+	f_score = math.inf
 
 	# heuristic_cost_estimate(a, b) is the shortest possible path between a and b, this can be euclidean, octodirectional, Manhattan, or something fancy based on how the machine moves
 	# the best possible distance between the start and the goal will be the heuristic
@@ -60,12 +63,18 @@ def aStar(start,goal):
 
     while openset is not empty                                          # while there are still nodes that have not been checked, continually run the algorithm
 
-        current = the node in openset having the lowest f_score[] value # this is the most promising node of all nodes in the open set
+        
+
+        current = heapq.heappop(self.opened) # this is the most promising node of all nodes in the open set
+
         if current = goal                                               # if the best possible path found leads to the goal, it is the best possible path that the robot could discover
             return reconstruct_path(came_from, goal)
 
-        remove current from openset                  # mark this node as having been evaluated
-        add current to closedset
+        #remove current from openset                  # mark this node as having been evaluated
+        #add current to closedset
+        
+        closedset.add(current) 
+
         for each neighbor in neighbor_nodes(current) # re-evaluate each neighboring node
             if neighbor in closedset
                 continue
