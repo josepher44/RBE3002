@@ -152,16 +152,20 @@ def heuristic_cost_estimate(start, goal):
 
 
 def distance_calculation(startpose, goalpose):
-    startx = startpose.pose.pose.position.x
-    starty = startpose.pose.pose.position.y
-    return math.sqrt(startx**2 + starty**2)
+    startx = startpose.pose.position.x
+    starty = startpose.pose.position.y
+    endx = goalpose.pose.x
+    endy = goalpose.pose.y
+    deltax = endx-startx
+    deltay = endy-starty
+    return math.sqrt(deltax**2 + deltay**2)
 
 def angle_pose_to_path(startpose, goalpose):
     #Calculates the angle from a start pose, to the path between the start pose and the goal pose
     startQuat = startpose.pose.pose.orientation
     (rollStart, pitchStart, yawStart) = euler_from_quaternion(startQuat)
-    startx = startpose.pose.pose.position.x
-    starty = startpose.pose.pose.position.y
+    startx = startpose.pose.position.x
+    starty = startpose.pose.position.y
     endx = goalpose.pose.position.x
     endy = goalpose.pose.position.y
     deltax = endx-startx
@@ -175,8 +179,8 @@ def angle_path_to_pose(startpose, goalpose):
     #Calculates the angle from a path of travel between two poses, and the desired angle at the end pose
     endQuat = goalpose.pose.orientation
     (rollEnd, pitchEnd, yawEnd) = euler_from_quaternion(endQuat)
-    startx = startpose.pose.pose.position.x
-    starty = startpose.pose.pose.position.y
+    startx = startpose.pose.position.x
+    starty = startpose.pose.position.y
     endx = goalpose.pose.position.x
     endy = goalpose.pose.position.y
     deltax = endx-startx
@@ -193,7 +197,15 @@ def neighbor_nodes(currentNode):
 		for j in range (-1, 2):
 			if not getWall(currentNode.x+i, currentNode.y+j):
 				adjacent.append(node(currentNode.x+i, currentNode.y+j, False, gValueFunction(currentNode, i, j), heuristic_cost_estimate(currentNode.pose, newPose (currentNode, currentNode.x+i, currentNode.y+j)), currentNode)
-	return adjacent 
+	return adjacent
+
+
+
+def gValueFunction(currentNode, i, j):
+    return kTurn*(atan2(currentNode.y-currentNode.parent.y, currentNode.x-currentNode.parent.x)-atan2(j, i)) + kDistance*math.sqrt(i**2+j**2)
+    #finds difference between next heading and current heading, multiplies by turn constant, adds to distance difficulty and returns
+
+a
 	
 def dist_between(current,neighbor):
 	return math.sqrt((neighbor.pose.position.x - current.pose.position.x)**2 + (neighbor.pose.position.y - current.pose.position.y)**2)
