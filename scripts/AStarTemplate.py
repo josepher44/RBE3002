@@ -77,7 +77,10 @@ def reconstruct_path(came_from,current):
 	
 def heuristic_cost_estimate(start, goal):
 	return #if there were no obstacles in the way of the robot, what is the shortest path to the goal?  Return that value
-	
+
+def distance_calculation(start, goal):
+    return
+
 def neighbor_nodes(current):
 	return #all nodes adjacent to the current node, this could be a list, an array, or any number of existing or custom data-types
 	
