@@ -264,6 +264,7 @@ def neighbor_nodes(currentNode):
         for j in range (-1, 2):
             if not getWall(currentNode.x+i, currentNode.y+j):
                 adjacent.append(node(currentNode.x+i, currentNode.y+j, False, gValueFunction(currentNode, i, j), currentNode))
+
     return adjacent
 
 

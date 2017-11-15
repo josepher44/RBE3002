@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ebbb149a-5654-4a6b-87fe-788846317257" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/AStarTemplate.py" afterPath="$PROJECT_DIR$/scripts/AStarTemplate.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/lab3_grid_cells.py" afterPath="$PROJECT_DIR$/scripts/lab3_grid_cells.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -29,8 +28,8 @@
       <file leaf-file-name="AStarTemplate.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/AStarTemplate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="351">
-              <caret line="177" column="39" lean-forward="false" selection-start-line="177" selection-start-column="38" selection-end-line="177" selection-end-column="39" />
+            <state relative-caret-position="446">
+              <caret line="270" column="0" lean-forward="true" selection-start-line="270" selection-start-column="0" selection-end-line="270" selection-end-column="0" />
               <folding>
                 <element signature="e#23#35#0" expanded="true" />
               </folding>
@@ -68,8 +67,8 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/scripts/AStarTemplate.py" />
         <option value="$PROJECT_DIR$/scripts/lab3_grid_cells.py" />
+        <option value="$PROJECT_DIR$/scripts/AStarTemplate.py" />
       </list>
     </option>
   </component>
@@ -330,8 +329,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/AStarTemplate.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="351">
-          <caret line="177" column="39" lean-forward="false" selection-start-line="177" selection-start-column="38" selection-end-line="177" selection-end-column="39" />
+        <state relative-caret-position="446">
+          <caret line="270" column="0" lean-forward="true" selection-start-line="270" selection-start-column="0" selection-end-line="270" selection-end-column="0" />
           <folding>
             <element signature="e#23#35#0" expanded="true" />
           </folding>
