@@ -25,6 +25,7 @@ goal which travels through the current node.  By iterating the algorithm through
 Authors: Wikipedia, Connor Flanigan
 """
 
+
 def newPose (parent, x, y):
     poseOut = Pose()
     poseOut.position.x = x
