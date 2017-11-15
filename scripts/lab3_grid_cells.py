@@ -10,7 +10,7 @@ import tf
 import numpy
 import math 
 import rospy, tf, numpy, math
-
+import AStarTemplate
 
 
 
@@ -73,9 +73,9 @@ def publishCells(grid):
     cells.cell_width = resolution 
     cells.cell_height = resolution
 
-    for i in range(1,height): #height should be set to hieght of grid
+    for i in range(1,512): #height should be set to hieght of grid
         k=k+1
-        for j in range(1,width): #width should be set to width of grid
+        for j in range(1,480): #width should be set to width of grid
             k=k+1
             #print k # used for debugging
             if (grid[k] == 100):
@@ -96,7 +96,7 @@ def run():
     pubway = rospy.Publisher("/waypoints", GridCells, queue_size=1)
     goal_sub = rospy.Subscriber('move_base_simple/goal', PoseStamped, readGoal, queue_size=1) #change topic for best results
     goal_sub = rospy.Subscriber('initialpose', PoseWithCovarianceStamped, readStart, queue_size=1) #change topic for best results
-
+    
     # wait a second for publisher, subscribers, and TF
     rospy.sleep(1)
 
