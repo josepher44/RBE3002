@@ -29,7 +29,7 @@ def newPose (parent, x, y)
 	poseOut = Pose()
 	poseOut.position.x = x
 	poseOut.position.y = y
-	poseout.position.z = 0
+	poseOut.position.z = 0
 	poseOut.orientation.x = 0
 	poseOut.orientation.y = 0
 	poseOut.orientation.z = 1

@@ -10,7 +10,7 @@ import tf
 import numpy as np
 import math 
 import rospy, tf, math
-#import AStarTemplate
+import AStarTemplate
 
 
 
@@ -19,9 +19,10 @@ import rospy, tf, math
 def __init():
      global mapDataOut
      global wallDataOut
+     global checkedDataOut
      mapDataOut = GridCells()
      wallDataOut = GridCells()
-
+     checkedDataOut = GridCells()
 
 # reads in global map
 def mapCallBack(data):
@@ -45,7 +46,7 @@ def mapCallBack(data):
     print(width)
     print(height)
     a = np.array(data.data)
-    reshapedMap = np.reshape(a, (width,height))
+    reshapedMap = np.reshape(a, (height, width))
     offsetX = data.info.origin.position.x
     offsetY = data.info.origin.position.y
     print data.info
@@ -53,8 +54,6 @@ def mapCallBack(data):
 def gridFromPose(pose):
     gridx = int((pose.position.x - offsetX - (.5 * resolution)) / resolution)
     gridy = int((pose.position.y - offsetY - (.5 * resolution)) / resolution)
-
-
 
 def readGoal(goal):
     global goalX
@@ -93,20 +92,25 @@ def getWall(x,y):
 
 
 def publishWalls():
+    data = GridCells()
 
 
-    wallDataOut.header.frame_id = 'map'
-    wallDataOut.cell_width = resolution
-    wallDataOut.cell_height = resolution
-
-    for i in range(0,width):
-        for j in range(0,height):
+    for i in range(0,height):
+        for j in range(0,width):
             if getWall(i,j):
 
-                wallDataOut.cells.append(addScaledPoint(i,j))
+                data.cells.append(addScaledPoint(j,i))
                 print("Wrote cell at"+repr(i)+", "+repr(j))
 
-    wallpub.publish(wallDataOut)
+    publishCells(wallpub,data)
+
+
+def publishChecked():
+    data = GridCells()
+
+    for node in set():
+        data.cells.append(addScaledPoint(node.y, node.x))
+    publishCells(checkedpub, data)
 
 def addScaledPoint(x,y):
     pointToAdd = Point()
@@ -116,24 +120,11 @@ def addScaledPoint(x,y):
     return pointToAdd
 
 
-def publishCells(grid, publisher):
-    global pub
-    print "publishing"
-
-    # resolution and offset of the map
-    k=0
-    mapDataOut.header.frame_id = 'map'
-    mapDataOut.cell_width = resolution
-    mapDataOut.cell_height = resolution
-    pointToAdd = Point()
-
-    pointToAdd.x = (1 * resolution) + offsetX + (.5 * resolution)
-    pointToAdd.y = (1 * resolution) + offsetY + (.5 * resolution)
-
-    pointToAdd.z = 0
-    mapDataOut.cells.append(pointToAdd)
-    print("Wrote cell at"+repr(1)+", "+repr(1))
-    publisher.publish(mapDataOut)
+def publishCells(publisher, data):
+    data.header.frame_id = 'map'
+    data.cell_width = resolution
+    data.cell_height = resolution
+    publisher.publish(data)
 
 
 
@@ -141,13 +132,14 @@ def publishCells(grid, publisher):
 def run():
     global pub
     global wallpub
+    global checkedpub
     rospy.init_node('lab3')
     sub = rospy.Subscriber("/map", OccupancyGrid, mapCallBack)
     pub = rospy.Publisher("/map_check", GridCells, queue_size=1)
     wallpub = rospy.Publisher("/walls", GridCells, queue_size=1)
     pubpath = rospy.Publisher("/path", GridCells, queue_size=1) # you can use other types if desired
     pubway = rospy.Publisher("/waypoints", GridCells, queue_size=1)
-    pubchecked = rospy.Publisher("/checked", GridCells, queue_size=1)
+    checkedpub = rospy.Publisher("/checked", GridCells, queue_size=1)
     pubfrontier = rospy.Publisher("/frontier", GridCells, queue_size=1)
     goal_sub = rospy.Subscriber('move_base_simple/goal', PoseStamped, readGoal, queue_size=1) #change topic for best results
     goal_sub = rospy.Subscriber('initialpose', PoseWithCovarianceStamped, readStart, queue_size=1) #change topic for best results
