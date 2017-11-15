@@ -8,6 +8,7 @@ from nav_msgs.msg import Odometry, OccupancyGrid
 from kobuki_msgs.msg import BumperEvent
 from tf.transformations import euler_from_quaternion
 import tf
+import heapq
 import numpy
 import math
 import rospy, tf, numpy, math
@@ -24,26 +25,59 @@ goal which travels through the current node.  By iterating the algorithm through
 Authors: Wikipedia, Connor Flanigan
 """
 
+class node(object):
+    def __init__(self, x, y, isOccupied, g, h):
+        self.priority = priority
+        self.description = description
+        self.x = x
+        self.y = y
+        self.parent = None
+	self.h = heuristicFunction(self)
+	self.g = previousG + 1
+        self.f = self.G + self.H)
+        self.isOccupied = isOccupied
+        
+        return
+    def __cmp__(self, other):
+        return cmp(self.priority, other.priority)
+
+
+
+def __init__(self):
+    kDistance = .75
+    kTurn = .25
+
+def getWall(x,y)
+	location = GridCells.width*y+x
+	if OccupencyGrid.data[location]<50
+	return False
+	else
+	return True
+	
+
+
 #it's recommended that start is a poseStamped msg and goal is a pose msg, RViz likes using that for visualization.
 def aStar(start,goal):
-    """
+    
 
 
-    closedset = the empty set    # The set of nodes already evaluated.
-    openset = [start]            # The set of tentative nodes to be evaluated, initially containing the start node.  The nodes in this set are the nodes that make the frontier between the closed
-	                             # set and all other nodes.
-    came_from = the empty map    # The map of navigated nodes.
+    closedset = set()    # The set of nodes already evaluated.
+    openset = []
+	heapq.heapify(openset)
+    heapq.heappush = (heap, (distance_calculation(start, goal), start)  # The set of tentative nodes to be evaluated, initially containing the start node.  The nodes in this set are the nodes that make the frontier between the closed
+       # set and all other nodes.
+    came_from = the empty map    # The map of navigated nodes. TODO
 
 	# The g_score of a node is the distance of the shortest path from the start to the node.
 	# Start by assuming that all nodes that have yet to be processed cannot be reached
-    g_score = map with default value of Infinity
+    g_score = math.inf
 
 	# The starting node has zero distance from start
     g_score[start] = 0
 
     # The f_score of a node is the estimated total cost from start to goal to the goal.  This is the sum of the g_score (shortest known path) and the h_score (best possible path).
     # assume same as g_score
-	f_score = map with default value of Infinity
+	f_score = math.inf
 
 	# heuristic_cost_estimate(a, b) is the shortest possible path between a and b, this can be euclidean, octodirectional, Manhattan, or something fancy based on how the machine moves
 	# the best possible distance between the start and the goal will be the heuristic
@@ -52,12 +86,18 @@ def aStar(start,goal):
 
     while openset is not empty                                          # while there are still nodes that have not been checked, continually run the algorithm
 
-        current = the node in openset having the lowest f_score[] value # this is the most promising node of all nodes in the open set
+        
+
+        f, current = heapq.heappop(self.opened) # this is the most promising node of all nodes in the open set
+
         if current = goal                                               # if the best possible path found leads to the goal, it is the best possible path that the robot could discover
             return reconstruct_path(came_from, goal)
 
-        remove current from openset                  # mark this node as having been evaluated
-        add current to closedset
+        #remove current from openset                  # mark this node as having been evaluated
+        #add current to closedset
+        
+        closedset.add(current) 
+
         for each neighbor in neighbor_nodes(current) # re-evaluate each neighboring node
             if neighbor in closedset
                 continue
@@ -73,7 +113,7 @@ def aStar(start,goal):
                     add neighbor to openset
 
     return failure #if the program runs out of nodes to check before it finds the goal, then a solution does not exist
-"""
+
 # Starting from the goal, work backwards to find the start.  We recommend returning a path nav_msgs, which is an array of PoseStamped with a header
 def reconstruct_path(came_from,current):
 
@@ -93,7 +133,11 @@ def reconstruct_path(came_from,current):
     return total_path
 
 def heuristic_cost_estimate(start, goal):
-	return #if there were no obstacles in the way of the robot, what is the shortest path to the goal?  Return that value
+
+	return kDistance*distance_calculation(start, goal) + kTurn*(angle_pose_to_path(startpose, goalpose) + angle_path_to_pose(startpose, goalpose))
+    #if there were no obstacles in the way of the robot, what is the shortest path to the goal?  Return that value
+
+
 
 def distance_calculation(startpose, goalpose):
     startx = startpose.pose.position.x
@@ -135,12 +179,17 @@ def angle_path_to_pose(startpose, goalpose):
     return travelAngle-yawEnd
 
 
+def neighbor_nodes(currentNode):
+	adjacent = []
+	for i in range(-1, 2):
+		for j in range (-1, 3)	
+			if not getWall(currentNode.x+i, currentNode.y+j)
+			adjacent.append(node(currentNode.x+i, currentNode.y+j, False, gValueFunction(currentNodePosition, i, j), heuristic_cost_estimate(currentNode))
 
-def neighbor_nodes(current):
-	return #all nodes adjacent to the current node, this could be a list, an array, or any number of existing or custom data-types
 	
 def dist_between(current,neighbor):
-	return #the distance necessary to travel to the neighbor from the current node
+	return math.sqrt((neighbor.pose.position.x - current.pose.position.x)**2 + (neighbor.pose.position.y - current.pose.position.y)**2)
+    #TODO the distance necessary to travel to the neighbor from the current node
 	
 """
 
