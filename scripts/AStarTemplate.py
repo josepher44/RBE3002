@@ -171,18 +171,12 @@ def angle_path_to_pose(startpose, goalpose):
     return travelAngle-yawEnd
 
 
-
-<<<<<<< HEAD
 def neighbor_nodes(currentNode):
 	adjacent = []
 	for i in range(-1, 2):
 		for j in range (-1, 3)	
 			adjacent.append(node(currentNode.x+i, currentNode.y+j, getWall(currentNode.x+i, currentNode.y+j), currentNode.g+1, HeuristicFunction(currentNode))
-	return listOfAdjacentCoordinates #all nodes adjacent to the current node, this could be a list, an array, or any number of existing or custom data-types
-=======
-def neighbor_nodes(current):
-	return #TODO all nodes adjacent to the current node, this could be a list, an array, or any number of existing or custom data-types 
->>>>>>> bf2bd9a61e2c2fe4bfb76ef92ffc8e63886cc414
+
 	
 def dist_between(current,neighbor):
 	return math.sqrt((neighbor.pose.position.x - current.pose.position.x)**2 + (neighbor.pose.position.y - current.pose.position.y)**2)
