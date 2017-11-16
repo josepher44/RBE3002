@@ -13,20 +13,15 @@ import rospy, tf, math
 import AStarTemplate
 
 
-class globalValues(object):
-    def __init__():
-        _offsetX=offsetX
-        _offsetY=
-        _resolution
-        return
-
-    def __cmp__(self, other):
-        return cmp(self.priority, other.priority)
 
 def __init():
      global mapDataOut
      global wallDataOut
      global checkedDataOut
+     global hasStart
+     global hasGoal
+     hasStart = False
+     hasGoal = False
      mapDataOut = GridCells()
      wallDataOut = GridCells()
      checkedDataOut = GridCells()
@@ -42,6 +37,7 @@ def mapCallBack(data):
     global resolution
     global offsetX
     global offsetY
+
     mapgrid = data
 
     resolution = data.info.resolution
@@ -63,6 +59,8 @@ class mapData:
         self._offsetX = offsetX
         self._offsetY = offsetY
         self._resolution = resolution
+        self._reshapedMap = reshapedMap
+
 
 
 def gridFromPose(pose):
@@ -70,6 +68,7 @@ def gridFromPose(pose):
     gridy = int((pose.position.y - offsetY - (.5 * resolution)) / resolution)
 
 def readGoal(goal):
+    global hasGoal
     print("read goal")
     global goalX
     global goalY
@@ -83,8 +82,10 @@ def readGoal(goal):
     poseGoal.position.y = goalY
     poseGoal.position.z = 0
     poseGoal.orientation = goal.pose.orientation
+    hasGoal=True
     return poseGoal
 def readStart(startPos):
+    global hasStart
     print("read start")
     global startPosX
     global startPosY
@@ -97,6 +98,7 @@ def readStart(startPos):
     poseStart.position.y = startPosY
     poseStart.position.z = 0
     poseStart.orientation = startPos.pose.pose.orientation
+    hasStart=True
     return poseStart
 def aStar(start,goal):
     pass
@@ -133,12 +135,19 @@ def publishWalls():
     publishCells(wallpub,data)
 
 
-def publishChecked():
+def publishChecked(checkedCells):
     data = GridCells()
 
-    for node in set():
+    for node in checkedCells:
         data.cells.append(addScaledPoint(node.y, node.x))
     publishCells(checkedpub, data)
+
+def publishOpen(openCells):
+    data = GridCells()
+
+    for node in openCells:
+        data.cells.append(addScaledPoint(node.y, node.x))
+    publishCells(openpub, data)
 
 def addScaledPoint(x,y):
     pointToAdd = Point()
@@ -158,11 +167,14 @@ def publishCells(publisher, data):
 
 #Main handler of the project
 def run():
+
+
     global pub
     global wallpub
     global checkedpub
     global start_sub
     global goal_sub
+    global openpub
     rospy.init_node('lab3')
     sub = rospy.Subscriber("/map", OccupancyGrid, mapCallBack)
     pub = rospy.Publisher("/map_check", GridCells, queue_size=1)
@@ -170,6 +182,7 @@ def run():
     pubpath = rospy.Publisher("/path", GridCells, queue_size=1) # you can use other types if desired
     pubway = rospy.Publisher("/waypoints", GridCells, queue_size=1)
     checkedpub = rospy.Publisher("/checked", GridCells, queue_size=1)
+    openpub = rospy.Publisher("/frontier", GridCells, queue_size=1)
     pubfrontier = rospy.Publisher("/frontier", GridCells, queue_size=1)
     goal_sub = rospy.Subscriber('/move_base_simple/goal2', PoseStamped, readGoal, queue_size=1) #change topic for best results
     start_sub = rospy.Subscriber('/initialpose2', PoseWithCovarianceStamped, readStart, queue_size=1) #change topic for best results
@@ -184,9 +197,11 @@ def run():
 
     while (1 and not rospy.is_shutdown()):
         publishWalls() #publishing map data every 2 seconds
-        astar = AStarTemplate()
-        astar.aStar(poseStart, poseGoal, globalValues())
 
+        if hasGoal and hasStart:
+            AStarTemplate.aStar(poseStart, poseGoal, mapData())
+        publishOpen(AStarTemplate.openset)
+        publishChecked(AStarTemplate.closedset)
         rospy.sleep(1)
         print("Complete")
         time=time+1

@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ebbb149a-5654-4a6b-87fe-788846317257" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts/AStarClass.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/AStarTemplate.py" afterPath="$PROJECT_DIR$/scripts/AStarTemplate.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/lab3_grid_cells.py" afterPath="$PROJECT_DIR$/scripts/lab3_grid_cells.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -16,8 +19,8 @@
       <file leaf-file-name="lab3_grid_cells.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/lab3_grid_cells.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="324">
-              <caret line="18" column="17" lean-forward="false" selection-start-line="18" selection-start-column="17" selection-end-line="18" selection-end-column="17" />
+            <state relative-caret-position="532">
+              <caret line="202" column="42" lean-forward="true" selection-start-line="202" selection-start-column="42" selection-end-line="202" selection-end-column="42" />
               <folding>
                 <element signature="e#23#35#0" expanded="true" />
               </folding>
@@ -25,11 +28,23 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AStarTemplate.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="AStarTemplate.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/AStarTemplate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="446">
-              <caret line="270" column="0" lean-forward="true" selection-start-line="270" selection-start-column="0" selection-end-line="270" selection-end-column="0" />
+            <state relative-caret-position="126">
+              <caret line="19" column="39" lean-forward="false" selection-start-line="19" selection-start-column="39" selection-end-line="19" selection-end-column="39" />
+              <folding>
+                <element signature="e#23#35#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AStarClass.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/scripts/AStarClass.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="378">
+              <caret line="69" column="24" lean-forward="true" selection-start-line="69" selection-start-column="24" selection-end-line="69" selection-end-column="24" />
               <folding>
                 <element signature="e#23#35#0" expanded="true" />
               </folding>
@@ -49,6 +64,13 @@
       </file>
     </leaf>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="FindInProjectRecents">
     <findStrings>
       <find>resolution</find>
@@ -59,6 +81,12 @@
       <find>newPose</find>
       <find>openSet</find>
       <find>offset</find>
+      <find>wall</find>
+      <find>Occup</find>
+      <find>opened</find>
+      <find>openset</find>
+      <find>reshapedM</find>
+      <find>closed</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -67,8 +95,9 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/scripts/lab3_grid_cells.py" />
         <option value="$PROJECT_DIR$/scripts/AStarTemplate.py" />
+        <option value="$PROJECT_DIR$/scripts/lab3_grid_cells.py" />
+        <option value="$PROJECT_DIR$/scripts/AStarClass.py" />
       </list>
     </option>
   </component>
@@ -319,8 +348,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/lab3_grid_cells.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="18" column="17" lean-forward="false" selection-start-line="18" selection-start-column="17" selection-end-line="18" selection-end-column="17" />
+        <state relative-caret-position="532">
+          <caret line="202" column="42" lean-forward="true" selection-start-line="202" selection-start-column="42" selection-end-line="202" selection-end-column="42" />
           <folding>
             <element signature="e#23#35#0" expanded="true" />
           </folding>
@@ -329,8 +358,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/AStarTemplate.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="446">
-          <caret line="270" column="0" lean-forward="true" selection-start-line="270" selection-start-column="0" selection-end-line="270" selection-end-column="0" />
+        <state relative-caret-position="126">
+          <caret line="19" column="39" lean-forward="false" selection-start-line="19" selection-start-column="39" selection-end-line="19" selection-end-column="39" />
+          <folding>
+            <element signature="e#23#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/AStarClass.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="378">
+          <caret line="69" column="24" lean-forward="true" selection-start-line="69" selection-start-column="24" selection-end-line="69" selection-end-column="24" />
           <folding>
             <element signature="e#23#35#0" expanded="true" />
           </folding>

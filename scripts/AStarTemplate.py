@@ -72,6 +72,7 @@ def __init__(self):
     kDistance = .75
     kTurn = .25
 
+
 def convertMapPoseToGridPose(pose):
     outPose = Pose()
     outPose.position.x=int((pose.position.x - offsetX - (.5 * resolution)) / resolution)
@@ -92,8 +93,7 @@ def convertMapPoseToGridPose(pose):
 
 
 def getWall(x,y):
-    location = GridCells.width*y+x
-    if OccupencyGrid.data[location]<50:
+    if reshapedMap[x,y]<50:
         return False
     else:
         return True
@@ -114,6 +114,8 @@ def aStar(start,goal,mapData):
     offsetX = mapData._offsetX
     offsetY = mapData._offsetY
     resolution = mapData._resolution
+    global reshapedMap
+    reshapedMap = mapData._reshapedMap
     goalPose = convertMapPoseToGridPose(goal)
 
 
@@ -151,15 +153,15 @@ def aStar(start,goal,mapData):
 
     while (len(openset) != 0):    # while there are still nodes that have not been checked, continually run the algorithm
 
-        f, current = heapq.heappop(self.opened) # this is the most promising node of all nodes in the open set
+        f, current = heapq.heappop(openset) # this is the most promising node of all nodes in the open set
 
-        if (current.x==goalPose.x && current.y==goalPose.y):                                               # if the best possible path found leads to the goal, it is the best possible path that the robot could discover
+        if (current.x==goalPose.x and current.y==goalPose.y):                                               # if the best possible path found leads to the goal, it is the best possible path that the robot could discover
             return reconstruct_path(came_from, goal)
 
         #remove current from openset                  # mark this node as having been evaluated
         #add current to closedset
-        
-        closedset.add(current) 
+
+        closedset.add(current)
 
         for neighbor in neighbor_nodes(current): # re-evaluate each neighboring node
             if (neighbor in closedset):
@@ -199,7 +201,7 @@ def reconstruct_path():
     current = goalPose
 
     # run while reconstruct_path hasn't reached the start
-    while current.parent is not None
+    while current.parent is not None:
 
         # The current node is now the node that leads to the previous node
         current = current.parent
@@ -271,14 +273,14 @@ def neighbor_nodes(currentNode):
 
 
 def gValueFunction(currentNode, i, j):
-    return kTurn*(atan2(currentNode.y-currentNode.parent.y, currentNode.x-currentNode.parent.x)-atan2(j, i)) + kDistance*math.sqrt(i**2+j**2)
+    return kTurn*(math.atan2(currentNode.y-currentNode.parent.y, currentNode.x-currentNode.parent.x)-atan2(j, i)) + kDistance*math.sqrt(i**2+j**2)
     #finds difference between next heading and current heading, multiplies by turn constant, adds to distance difficulty and returns
 
 
 def dist_between(current,neighbor):
     return math.sqrt((neighbor.pose.position.x - current.pose.position.x)**2 + (neighbor.pose.position.y - current.pose.position.y)**2)
     #TODO the distance necessary to travel to the neighbor from the current node
-    
+
 """
 
 some advice:
