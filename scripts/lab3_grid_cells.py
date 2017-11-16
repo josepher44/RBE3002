@@ -8,7 +8,7 @@ from nav_msgs.msg import Odometry, OccupancyGrid
 from kobuki_msgs.msg import BumperEvent
 import tf
 import numpy as np
-import math 
+import math
 import rospy, tf, math
 import AStarTemplate
 
@@ -54,7 +54,7 @@ def mapCallBack(data):
     offsetY = data.info.origin.position.y
     #print data.info
 
-class mapData:
+class MapDataToAStar:
     def __init__(self):
         self._offsetX = offsetX
         self._offsetY = offsetY
@@ -84,6 +84,7 @@ def readGoal(goal):
     poseGoal.orientation = goal.pose.orientation
     hasGoal=True
     return poseGoal
+
 def readStart(startPos):
     global hasStart
     print("read start")
@@ -100,6 +101,7 @@ def readStart(startPos):
     poseStart.orientation = startPos.pose.pose.orientation
     hasStart=True
     return poseStart
+
 def aStar(start,goal):
     pass
     # create a new instance of the map
@@ -118,11 +120,8 @@ def getWall(x,y):
     else:
         return True
 
-
-
 def publishWalls():
     data = GridCells()
-
 
     for i in range(0,height):
         for j in range(0,width):
@@ -139,14 +138,21 @@ def publishChecked(checkedCells):
     data = GridCells()
 
     for node in checkedCells:
-        data.cells.append(addScaledPoint(node.y, node.x))
+        data.cells.append(addScaledPoint(node.x, node.y))
     publishCells(checkedpub, data)
 
 def publishOpen(openCells):
     data = GridCells()
 
     for node in openCells:
-        data.cells.append(addScaledPoint(node.y, node.x))
+        data.cells.append(addScaledPoint(node.x, node.y))
+    publishCells(openpub, data)
+
+def publishPath(pathCells):
+    data = GridCells()
+
+    for node in pathCells:
+        data.cells.append(addScaledPoint(node.x, node.y))
     publishCells(openpub, data)
 
 def addScaledPoint(x,y):
@@ -175,6 +181,7 @@ def run():
     global start_sub
     global goal_sub
     global openpub
+    global pathpub
     rospy.init_node('lab3')
     sub = rospy.Subscriber("/map", OccupancyGrid, mapCallBack)
     pub = rospy.Publisher("/map_check", GridCells, queue_size=1)
@@ -183,29 +190,45 @@ def run():
     pubway = rospy.Publisher("/waypoints", GridCells, queue_size=1)
     checkedpub = rospy.Publisher("/checked", GridCells, queue_size=1)
     openpub = rospy.Publisher("/frontier", GridCells, queue_size=1)
+    pathpub = rospy.Publisher("/pathtotravel", GridCells, queue_size=1)
     pubfrontier = rospy.Publisher("/frontier", GridCells, queue_size=1)
     goal_sub = rospy.Subscriber('/move_base_simple/goal2', PoseStamped, readGoal, queue_size=1) #change topic for best results
     start_sub = rospy.Subscriber('/initialpose2', PoseWithCovarianceStamped, readStart, queue_size=1) #change topic for best results
-    
-   
+
+
 
 
     # wait a second for publisher, subscribers, and TF
     rospy.sleep(1)
     time=0
+    initialize = True
+    loopdone = False
+    publishWalls()
+    global lists
 
-
-    while (1 and not rospy.is_shutdown()):
-        publishWalls() #publishing map data every 2 seconds
+    while (not loopdone and not rospy.is_shutdown()):
+         #publishing map data every 2 seconds
 
         if hasGoal and hasStart:
-            AStarTemplate.aStar(poseStart, poseGoal, mapData())
-        publishOpen(AStarTemplate.openset)
-        publishChecked(AStarTemplate.closedset)
+            if (initialize):
+                lists = AStarTemplate.aStar(poseStart, poseGoal, MapDataToAStar())
+                initialize=False
+            else:
+                lists = AStarTemplate.aStarLoop(lists['openset'],lists['closedset'],lists['closedpoints'],lists['finalpath'])
+                if len(lists['finalpath'])>0:
+                    loopdone=True
+                    print ("Escaped the for loop")
+            publishChecked(lists['closedset'])
+            publishOpen(lists['openset'])
+        #rospy.sleep(0.002)
+    print ("Really escaped the for loop")
+    emptySet = set()
+    while (1 and not rospy.is_shutdown()):
+        publishChecked(emptySet)
+        publishOpen(emptySet)
+        publishPath(lists['finalpath'])
         rospy.sleep(1)
-        print("Complete")
-        time=time+1
-    
+
 
 
 if __name__ == '__main__':

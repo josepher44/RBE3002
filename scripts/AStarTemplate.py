@@ -31,46 +31,49 @@ def newPose (parent, x, y):
     poseOut.position.x = x
     poseOut.position.y = y
     poseOut.position.z = 0
-    poseOut.orientation.x = 0
-    poseOut.orientation.y = 0
-    poseOut.orientation.z = 1
-    poseOut.orientation.w = math.atan2((y-parent.y)/(x-parent.x))
+    poseOut.orientation = tf.transformations.quaternion_from_euler(0, 0, math.atan2((y-parent.y),(x-parent.x)))
+    return poseOut
+
+class xy(object):
+    def __init__(self, x, y):
+        self.x=x
+        self.y=y
 
 class node(object):
-    def __init__(self, x, y, isOccupied, parent):
-        self.priority = priority
-        self.description = description
+    def __init__(self, x, y, isOccupied, g, Parent):
         self.x = x
         self.y = y
-        self.parent = None
+        self.parent = Parent
 
-        if parent is not None:
-            self.pose = newPose(parent, x, y)
+        if self.parent is not None:
+            self.pose = newPose(self.parent, x, y)
+            self.isStart = False
+            self.g = g + Parent.g
+            print ("parent is not null")
         else:
             self.pose = startPose
-
+            self.isStart = True
+            self.g = g
         self.h = heuristic_cost_estimate(self.pose, goalPose)
-        self.g = g
+
         self.f = self.g + self.h
 
         self.isOccupied = isOccupied
-        self.parent = parent
+        self.index = nodeIndex
+        self.position = xy(x, y)
 
 
+    def __cmp__(self, other):
+        return cmp(self.f, other.f)
 
 
         
         return
-    def __cmp__(self, other):
-        return cmp(self.priority, other.priority)
+
+
 
 #things to subscribe to: /move_base_simple/goal, /geometry_msgs/Pose
 
-def __init__(self):
-    global kDistance
-    global kTurn
-    kDistance = .75
-    kTurn = .25
 
 
 def convertMapPoseToGridPose(pose):
@@ -81,7 +84,7 @@ def convertMapPoseToGridPose(pose):
     q_map = [pose.orientation.x,
                  pose.orientation.y,
                  pose.orientation.z,
-                 pose._current.orientation.w]
+                 pose.orientation.w]
 
     (roll_map, pitch_map, yaw_map) = euler_from_quaternion(q_map)
 
@@ -89,7 +92,7 @@ def convertMapPoseToGridPose(pose):
     yaw_new = int(math.pi/4 * round(float(yaw_map)/(math.pi/4)))
     outPose.orientation = tf.transformations.quaternion_from_euler(roll_map, pitch_map, yaw_new)
 
-
+    return outPose
 
 
 def getWall(x,y):
@@ -101,12 +104,16 @@ def getWall(x,y):
 def startNodeFromPose(pose):
     global startPose
     startPose = convertMapPoseToGridPose(pose)
-    startNode = node.__init__(startPose.x, startPose.y, False, 0, heuristic_cost_estimate(startPose, goalPose),None)
+    print(startPose.position.x)
+    print(startPose.position.y)
+    startNode = node(startPose.position.x, startPose.position.y, False, 0, None)
     return startNode
 
 
 #it's recommended that start is a poseStamped msg and goal is a pose msg, RViz likes using that for visualization.
 def aStar(start,goal,mapData):
+    global nodeIndex
+    nodeIndex = 0
     global offsetX
     global offsetY
     global resolution
@@ -117,73 +124,94 @@ def aStar(start,goal,mapData):
     global reshapedMap
     reshapedMap = mapData._reshapedMap
     goalPose = convertMapPoseToGridPose(goal)
+    global kDistance
+    global kTurn
 
-
-
+    kDistance = .075
+    kTurn = 0
 
     closedset = set()    # The set of nodes already evaluated.
+    closedpoints = set()
+    finalpath = set()
     global opensetPoints
-    global closedsetPoints
+    global openset
     openset = []  #this is a heapq
     heapq.heapify(openset)
-    heapq.heappush = (heap, (distance_calculation(start, goal), start))  # The set of tentative nodes to be evaluated, initially containing the start node.  The nodes in this set are the nodes that make the frontier between the closed
+    #heapq.heappush = (openset, (distance_calculation(start, goal), start))  # The set of tentative nodes to be evaluated, initially containing the start node.  The nodes in this set are the nodes that make the frontier between the closed
        # set and all other nodes.
 
     openset.append(startNodeFromPose(start))
 
     came_from = []    # The map of navigated nodes. TODO
 
-
-
-    # The g_score of a node is the distance of the shortest path from the start to the node.
-    # Start by assuming that all nodes that have yet to be processed cannot be reached
-    g_score = math.inf
-
-    # The starting node has zero distance from start
-    g_score[start] = 0
-
-    # The f_score of a node is the estimated total cost from start to goal to the goal.  This is the sum of the g_score (shortest known path) and the h_score (best possible path).
-    # assume same as g_score
-    f_score = math.inf
-
-    # heuristic_cost_estimate(a, b) is the shortest possible path between a and b, this can be euclidean, octodirectional, Manhattan, or something fancy based on how the machine moves
-    # the best possible distance between the start and the goal will be the heuristic
-    f_score[start] = (g_score[start] + heuristic_cost_estimate(start, goal))
-
-
     while (len(openset) != 0):    # while there are still nodes that have not been checked, continually run the algorithm
 
-        f, current = heapq.heappop(openset) # this is the most promising node of all nodes in the open set
-
-        if (current.x==goalPose.x and current.y==goalPose.y):                                               # if the best possible path found leads to the goal, it is the best possible path that the robot could discover
-            return reconstruct_path(came_from, goal)
+        current = heapq.heappop(openset) # this is the most promising node of all nodes in the open set
+        print ("current node index is ")
+        print(current.index)
+        print ("current heap size is ")
+        print(len(openset))
+        if (current.x==goalPose.position.x and current.y==goalPose.position.y):                                               # if the best possible path found leads to the goal, it is the best possible path that the robot could discover
+            return reconstruct_path(current)
 
         #remove current from openset                  # mark this node as having been evaluated
         #add current to closedset
-
         closedset.add(current)
+        closedpoints.add(current.position)
+        neighborSet = neighbor_nodes(current)
+        for neighbor in neighborSet: # re-evaluate each neighboring node
 
-        for neighbor in neighbor_nodes(current): # re-evaluate each neighboring node
-            if (neighbor in closedset):
-                continue
-            tentative_g_score = g_score[current] + dist_between(current,neighbor) # create a new g_score for the current neighbor by adding the g_score from the current node and
-                                                                                  # the distance to the neighbor
+            if (checkIfListContainsPoint(closedpoints, neighbor) and neighbor not in openset and checkExistingNodes(neighbor)):
+                heapq.heappush(openset,neighbor) #add neighbor to open set
 
-            if (neighbor not in openset or tentative_g_score < g_score[neighbor]):                 # if the neighbor has not been evaluated yet, or if a better path to the neighbor has been found,
-                                                                                                # update the neighbor
-                came_from[neighbor] = current                                                   # The node to reach this node from in the best time is the current node
-                g_score[neighbor] = tentative_g_score                                           # The G score of the node is what we tentatively calculated earlier
-                f_score[neighbor] = g_score[neighbor] + heuristic_cost_estimate(neighbor, goal) # The F score is the G score and the heuristic
-                if (neighbor not in openset):                                                      # add this neighbor to the frontier if it was not in it already
-                    heapq.heappush(openset,(fscore[neighbor], neighbor)) #add neighbot ghbor to openset
+        print ("current heap size after adds is ")
+        print(len(openset))
         for node in openset:
             opensetPoints = GridCells()
-            opensetPoints.cells.append(addScaledPoint(node.y, node.x))
+            opensetPoints.cells.append(addScaledPoint(node.x, node.y))
         for node in closedset:
             closedsetPoints = GridCells()
-            closedsetPoints.cells.append(addScaledPoint(node.y, node.x))
+            closedsetPoints.cells.append(addScaledPoint(node.x, node.y))
+        return {'closedset':closedset, 'closedpoints':closedpoints, 'openset':openset, 'finalpath':finalpath}
+    print("failed")
+    #return failure #if the program runs out of nodes to check before it finds the goal, then a solution does not exist
 
-    return failure #if the program runs out of nodes to check before it finds the goal, then a solution does not exist
+def aStarLoop(open_set, closed_set, closed_points, final_path):
+    while (len(open_set) != 0):    # while there are still nodes that have not been checked, continually run the algorithm
+
+        current = heapq.heappop(open_set) # this is the most promising node of all nodes in the open set
+        #print ("current node index is ")
+        #print(current.index)
+        #print ("current heap size is ")
+        #print(len(open_set))
+        print ("current f is ")
+        print(current.f)
+        print ("current g is ")
+        print(current.g)
+        if (current.x==goalPose.position.x and current.y==goalPose.position.y):                                               # if the best possible path found leads to the goal, it is the best possible path that the robot could discover
+            final_path = reconstruct_path(current)
+            return {'closedset': closed_set, 'closedpoints': closed_points, 'openset': openset, 'finalpath': final_path}
+            print("Found path! Go get a signoff now!")
+
+        #remove current from openset                  # mark this node as having been evaluated
+        #add current to closedset
+        closed_set.add(current)
+        closed_points.add(current.position)
+        neighborSet = neighbor_nodes(current)
+        for neighbor in neighborSet: # re-evaluate each neighboring node
+
+            if (checkIfListContainsPoint(closed_points, neighbor) and neighbor not in openset and checkExistingNodes(neighbor)):
+                heapq.heappush(openset,neighbor) #add neighbor to open set
+
+        #print ("current heap size after adds is ")
+        #print(len(open_set))
+        for node in open_set:
+            opensetPoints = GridCells()
+            opensetPoints.cells.append(addScaledPoint(node.x, node.y))
+        for node in closed_set:
+            closedsetPoints = GridCells()
+            closedsetPoints.cells.append(addScaledPoint(node.x, node.y))
+        return {'closedset':closed_set, 'closedpoints':closed_points, 'openset':openset, 'finalpath':final_path}
 
 def addScaledPoint(x,y):
     pointToAdd = Point()
@@ -192,50 +220,59 @@ def addScaledPoint(x,y):
     pointToAdd.z = 0
     return pointToAdd
 
+def checkIfListContainsPoint(list, point):
+    for entry in list:
+        if entry.x==point.x and entry.y==point.y:
+            return False
+    return True
+
+
+
 
 # Starting from the goal, work backwards to find the start.  We recommend returning a path nav_msgs, which is an array of PoseStamped with a header
-def reconstruct_path():
+def reconstruct_path(node):
 
     # start by adding goal to the path
-    total_path = [goalPose]
-    current = goalPose
+    total_path = set()
+    current = node
 
+    print ("started reconstruction")
     # run while reconstruct_path hasn't reached the start
     while current.parent is not None:
-
+        print ("ran loop for reconstruction")
         # The current node is now the node that leads to the previous node
         current = current.parent
 
         # add the current node to the front of the list
-        total_path.append(current)
+        total_path.add(current)
 
     # The list is now the shortest path from the start to the end
     return total_path
 
-def heuristic_cost_estimate(start, goal):
+def heuristic_cost_estimate(startpose, goalpose):
 
-    return kDistance*distance_calculation(start, goal) + kTurn*(angle_pose_to_path(startpose, goalpose) + kTurn*(angle_path_to_pose(startpose, goalpose)))
+    return kDistance*distance_calculation(startpose, goalpose) + kTurn*(angle_pose_to_path(startpose, goalpose) + kTurn*(angle_path_to_pose(startpose, goalpose)))
     #if there were no obstacles in the way of the robot, what is the shortest path to the goal?  Return that value
 
 
 
 def distance_calculation(startpose, goalpose):
-    startx = startpose.pose.position.x
-    starty = startpose.pose.position.y
-    endx = goalpose.pose.x
-    endy = goalpose.pose.y
+    startx = startpose.position.x
+    starty = startpose.position.y
+    endx = goalpose.position.x
+    endy = goalpose.position.y
     deltax = endx-startx
     deltay = endy-starty
     return math.sqrt(deltax**2 + deltay**2)
 
 def angle_pose_to_path(startpose, goalpose):
     #Calculates the angle from a start pose, to the path between the start pose and the goal pose
-    startQuat = startpose.pose.pose.orientation
+    startQuat = startpose.orientation
     (rollStart, pitchStart, yawStart) = euler_from_quaternion(startQuat)
-    startx = startpose.pose.position.x
-    starty = startpose.pose.position.y
-    endx = goalpose.pose.position.x
-    endy = goalpose.pose.position.y
+    startx = startpose.position.x
+    starty = startpose.position.y
+    endx = goalpose.position.x
+    endy = goalpose.position.y
     deltax = endx-startx
     deltay = endy-starty
 
@@ -245,12 +282,12 @@ def angle_pose_to_path(startpose, goalpose):
 
 def angle_path_to_pose(startpose, goalpose):
     #Calculates the angle from a path of travel between two poses, and the desired angle at the end pose
-    endQuat = goalpose.pose.orientation
+    endQuat = goalpose.orientation
     (rollEnd, pitchEnd, yawEnd) = euler_from_quaternion(endQuat)
-    startx = startpose.pose.position.x
-    starty = startpose.pose.position.y
-    endx = goalpose.pose.position.x
-    endy = goalpose.pose.position.y
+    startx = startpose.position.x
+    starty = startpose.position.y
+    endx = goalpose.position.x
+    endy = goalpose.position.y
     deltax = endx-startx
     deltay = endy-starty
 
@@ -260,26 +297,85 @@ def angle_path_to_pose(startpose, goalpose):
 
 
 def neighbor_nodes(currentNode):
-
+    global nodeIndex
+    print(currentNode.x)
+    print(currentNode.y)
     adjacent = []
     for i in range(-1, 2):
         for j in range (-1, 2):
-            if not getWall(currentNode.x+i, currentNode.y+j):
+            if not (getWall(currentNode.y+j, currentNode.x+i)or(i==0 and j==0)):
                 adjacent.append(node(currentNode.x+i, currentNode.y+j, False, gValueFunction(currentNode, i, j), currentNode))
+                nodeIndex = nodeIndex+1
+
 
     return adjacent
 
+def checkExistingNodes(node1):
+    i=0
+    for node2 in openset:
+        if checkNodeEquality(node1, node2):
+            if (node2.g<=node1.g):
+                return False
+            #else:
+                #print("it actually hit the part it shouldn't hit")
+                #openset[i] = openset[-1]
+                #nodeOut = openset.pop()
+                #print("Node has values of x=")
+                #print (nodeOut.x)
+                #print (", y=")
+                #print (nodeOut.y)
+                #heapq.heapify(openset)
+
+    i=i+1
+    return True
+#Returns true only if the entered node does not share a space with an existing frontier node, and removes a node from the heap if it is reached more efficiently than by previous method
+
+
+def checkNodeEquality(node1, node2):
+    if node1.x == node2.x and node1.y == node2.y:
+        return True
+    else:
+        return False
+
+    #Returns true if two nodes share the same x, y position, false if otherwise
 
 
 
 def gValueFunction(currentNode, i, j):
-    return kTurn*(math.atan2(currentNode.y-currentNode.parent.y, currentNode.x-currentNode.parent.x)-atan2(j, i)) + kDistance*math.sqrt(i**2+j**2)
+    if (currentNode.isStart):
+        return kDistance*math.sqrt(i**2+j**2)
+    else:
+        return kTurn*(math.atan2(currentNode.y-currentNode.parent.y, currentNode.x-currentNode.parent.x)-math.atan2(j, i)) + kDistance*math.sqrt(i**2+j**2)
     #finds difference between next heading and current heading, multiplies by turn constant, adds to distance difficulty and returns
 
 
 def dist_between(current,neighbor):
+
     return math.sqrt((neighbor.pose.position.x - current.pose.position.x)**2 + (neighbor.pose.position.y - current.pose.position.y)**2)
     #TODO the distance necessary to travel to the neighbor from the current node
+
+def addAngleToAngle(start_angle, added_angle):
+    out = start_angle+added_angle
+    if out>2*math.pi:
+        out=out-2*math.pi
+    elif out<-2*math.pi:
+        out=out+2*math.pi
+    return out
+
+
+def distanceBetweenAngles(angle1, angle2):
+    if angle1 == angle2:
+        return 0
+    elif angle1>angle2:
+        split = angle2-angle1
+        if split<-math.pi:
+            split =2*math.pi+split
+    else:
+        split = angle2-angle1
+        if split>math.pi:
+            split=-2*math.pi+split
+    return split
+    #Compares two angles and returns the shortest (always a<pi) angle between them, assuming that angles go from -pi to pi. The output is directional such that
 
 """
 

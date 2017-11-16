@@ -90,7 +90,7 @@ class astar():
         outPose.orientation = tf.transformations.quaternion_from_euler(roll_map, pitch_map, yaw_new)
 
 
-    def getWall(x, y):
+    def getWall(self,x, y):
         if reshapedMap[x, y] < 50:
             return False
         else:
@@ -99,13 +99,13 @@ class astar():
 
     def startNodeFromPose(self,pose):
         global startPose
-        startPose = convertMapPoseToGridPose(pose)
+        startPose = self.convertMapPoseToGridPose(pose)
         startNode = node.__init__(startPose.x, startPose.y, False, 0, heuristic_cost_estimate(startPose, goalPose), None)
         return startNode
 
 
     # it's recommended that start is a poseStamped msg and goal is a pose msg, RViz likes using that for visualization.
-    def aStar(start, goal, mapData):
+    def aStar(self,start, goal, mapData):
         global offsetX
         global offsetY
         global resolution
