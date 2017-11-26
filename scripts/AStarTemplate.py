@@ -26,6 +26,15 @@ Authors: Wikipedia, Connor Flanigan
 """
 
 
+
+def finalRollout (current_pose, final_path):
+    for v, w in zip(final_path[:-1], final_path[1:]):
+        if (checkNodeEquality(current_pose, v)):
+            return angle_pose_to_path(current_pose, w)
+        
+
+
+
 def newPose (parent, x, y):
     poseOut = Pose()
     poseOut.position.x = x
@@ -66,9 +75,6 @@ class node(object):
     def __cmp__(self, other):
         return cmp(self.f, other.f)
 
-
-        
-        return
 
 
 
