@@ -11,6 +11,7 @@ import numpy as np
 import math
 import rospy, tf, math
 import AStarTemplate
+import copy
 
 
 
@@ -122,9 +123,12 @@ def getWall(x,y):
     else:
         return True
 
+
+
 def publishWalls():
     data = GridCells()
-    appended = GridCells()
+    appended = copy.deepcopy(reshapedMap)
+
 
     for i in range(0,height):
         for j in range(0,width):
@@ -132,8 +136,15 @@ def publishWalls():
                 for k in range(-3,4):
                     for m in range(-3,4):
                         data.cells.append(addScaledPoint(j+k,i+m))
+                        if(j+k>=0 and j+k<=width-1 and i+m>=0 and i+m<=height-1):
+                            appended[i+m, j+k] = 100
+                            print("added a wall")
                     #print("Wrote cell at"+repr(i)+", "+repr(j))
-
+    for i in range(0,height):
+        for j in range(0,width):
+            if appended[i,j]>50:
+                reshapedMap[i,j] = 100
+                print("wrote the new wall")
     print("Wrote wall cells")
     publishCells(wallpub,data)
 
@@ -146,7 +157,7 @@ def publishChecked(checkedCells):
     publishCells(checkedpub, data)
 
 def publishOpen(openCells):
-    data = OpenDataOut
+    data = GridCells()
 
     for node in openCells:
         data.cells.append(addScaledPoint(node.x, node.y))
