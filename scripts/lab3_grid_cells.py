@@ -18,6 +18,7 @@ def __init():
      global mapDataOut
      global wallDataOut
      global checkedDataOut
+     global openDataOut
      global hasStart
      global hasGoal
      hasStart = False
@@ -25,6 +26,7 @@ def __init():
      mapDataOut = GridCells()
      wallDataOut = GridCells()
      checkedDataOut = GridCells()
+
 
 # reads in global map
 def mapCallBack(data):
@@ -122,13 +124,15 @@ def getWall(x,y):
 
 def publishWalls():
     data = GridCells()
+    appended = GridCells()
 
     for i in range(0,height):
         for j in range(0,width):
             if getWall(i,j):
-
-                data.cells.append(addScaledPoint(j,i))
-                #print("Wrote cell at"+repr(i)+", "+repr(j))
+                for k in range(-3,4):
+                    for m in range(-3,4):
+                        data.cells.append(addScaledPoint(j+k,i+m))
+                    #print("Wrote cell at"+repr(i)+", "+repr(j))
 
     print("Wrote wall cells")
     publishCells(wallpub,data)
@@ -142,7 +146,7 @@ def publishChecked(checkedCells):
     publishCells(checkedpub, data)
 
 def publishOpen(openCells):
-    data = GridCells()
+    data = OpenDataOut
 
     for node in openCells:
         data.cells.append(addScaledPoint(node.x, node.y))
@@ -153,7 +157,7 @@ def publishPath(pathCells):
 
     for node in pathCells:
         data.cells.append(addScaledPoint(node.x, node.y))
-    publishCells(openpub, data)
+    publishCells(pathpub, data)
 
 def addScaledPoint(x,y):
     pointToAdd = Point()
@@ -186,7 +190,6 @@ def run():
     sub = rospy.Subscriber("/map", OccupancyGrid, mapCallBack)
     pub = rospy.Publisher("/map_check", GridCells, queue_size=1)
     wallpub = rospy.Publisher("/walls", GridCells, queue_size=1)
-    pubpath = rospy.Publisher("/path", GridCells, queue_size=1) # you can use other types if desired
     pubway = rospy.Publisher("/waypoints", GridCells, queue_size=1)
     checkedpub = rospy.Publisher("/checked", GridCells, queue_size=1)
     openpub = rospy.Publisher("/frontier", GridCells, queue_size=1)
