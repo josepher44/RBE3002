@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: Team_08
+Description: Description of Team_08
+Version: 0.0.0
+Cflags: 
+Libs: -L/usr/local/lib 
+Requires: 
