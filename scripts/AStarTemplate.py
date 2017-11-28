@@ -32,8 +32,17 @@ def finalRollout (current_pose, final_path):
     for v, w in zip(final_path[:-1], final_path[1:]):
         if (checkNodeEquality(current_pose, v)):
             return angle_pose_to_path(current_pose, w)
-        return NUL #TODO THIS SHOULD RERUN A* IF IT IS NOT ON THE ROUTE INSTEAD OF NUL
+    return NUL #TODO THIS SHOULD RERUN A* IF IT IS NOT ON THE ROUTE INSTEAD OF NUL
+    #also this should handle replanning
         
+
+def expandWalls (current_pose, final_path):
+    return NUL #TODO implement
+
+
+
+
+
 
 
 
