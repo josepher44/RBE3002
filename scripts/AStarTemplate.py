@@ -12,6 +12,7 @@ import heapq
 import numpy
 import math
 import rospy, tf, numpy, math
+from curses.ascii import NUL
 
 """"
 The A* search algorithm is an informed search algorithm of a known or explorable area, meaning that the program knows where the robot is, and where the goal is.  It also works with unexplored maps 
@@ -24,6 +25,25 @@ goal which travels through the current node.  By iterating the algorithm through
 
 Authors: Wikipedia, Connor Flanigan
 """
+
+
+
+def finalRollout (current_pose, final_path):
+    for v, w in zip(final_path[:-1], final_path[1:]):
+        if (checkNodeEquality(current_pose, v)):
+            return angle_pose_to_path(current_pose, w)
+    return NUL #TODO THIS SHOULD RERUN A* IF IT IS NOT ON THE ROUTE INSTEAD OF NUL
+    #also this should handle replanning
+        
+
+def expandWalls (current_pose, final_path):
+    return NUL #TODO implement
+
+
+
+
+
+
 
 
 def newPose (parent, x, y):
@@ -66,9 +86,6 @@ class node(object):
     def __cmp__(self, other):
         return cmp(self.f, other.f)
 
-
-        
-        return
 
 
 

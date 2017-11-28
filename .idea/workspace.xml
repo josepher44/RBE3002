@@ -15,11 +15,12 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="lab3_grid_cells.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="lab3_grid_cells.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/lab3_grid_cells.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="522">
               <caret line="131" column="33" lean-forward="false" selection-start-line="131" selection-start-column="33" selection-end-line="131" selection-end-column="33" />
+
               <folding>
                 <element signature="e#23#35#0" expanded="true" />
               </folding>
@@ -27,11 +28,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AStarTemplate.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="AStarTemplate.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/AStarTemplate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="342">
-              <caret line="148" column="103" lean-forward="true" selection-start-line="148" selection-start-column="103" selection-end-line="148" selection-end-column="103" />
+
+            <state relative-caret-position="887">
+              <caret line="199" column="12" lean-forward="false" selection-start-line="199" selection-start-column="12" selection-end-line="199" selection-end-column="12" />
+
               <folding>
                 <element signature="e#23#35#0" expanded="true" />
               </folding>
@@ -142,6 +145,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$/scripts/lab3_grid_cells.py" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -255,8 +259,10 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/scripts/lab3_grid_cells.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="28" column="0" lean-forward="false" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+
+        <state relative-caret-position="3834">
+          <caret line="223" column="41" lean-forward="false" selection-start-line="223" selection-start-column="41" selection-end-line="223" selection-end-column="41" />
+
           <folding>
             <element signature="e#23#35#0" expanded="true" />
           </folding>
@@ -265,8 +271,38 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/AStarTemplate.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2376">
-          <caret line="143" column="0" lean-forward="true" selection-start-line="143" selection-start-column="0" selection-end-line="143" selection-end-column="0" />
+        <state relative-caret-position="3384">
+          <caret line="199" column="12" lean-forward="false" selection-start-line="199" selection-start-column="12" selection-end-line="199" selection-end-column="12" />
+          <folding>
+            <element signature="e#23#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/AStarClass.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="21" column="39" lean-forward="false" selection-start-line="21" selection-start-column="39" selection-end-line="21" selection-end-column="39" />
+          <folding>
+            <element signature="e#23#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/lab3_grid_cells.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3834">
+          <caret line="223" column="41" lean-forward="false" selection-start-line="223" selection-start-column="41" selection-end-line="223" selection-end-column="41" />
+          <folding>
+            <element signature="e#23#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/AStarTemplate.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3384">
+          <caret line="199" column="12" lean-forward="false" selection-start-line="199" selection-start-column="12" selection-end-line="199" selection-end-column="12" />
           <folding>
             <element signature="e#23#35#0" expanded="true" />
           </folding>
@@ -457,20 +493,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/AStarTemplate.py">
+    <entry file="file://$PROJECT_DIR$/scripts/lab3_grid_cells.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="148" column="103" lean-forward="true" selection-start-line="148" selection-start-column="103" selection-end-line="148" selection-end-column="103" />
+        <state relative-caret-position="3834">
+          <caret line="223" column="41" lean-forward="false" selection-start-line="223" selection-start-column="41" selection-end-line="223" selection-end-column="41" />
           <folding>
             <element signature="e#23#35#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/lab3_grid_cells.py">
+    <entry file="file://$PROJECT_DIR$/scripts/AStarTemplate.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="522">
-          <caret line="131" column="33" lean-forward="false" selection-start-line="131" selection-start-column="33" selection-end-line="131" selection-end-column="33" />
+        <state relative-caret-position="887">
+          <caret line="199" column="12" lean-forward="false" selection-start-line="199" selection-start-column="12" selection-end-line="199" selection-end-column="12" />
           <folding>
             <element signature="e#23#35#0" expanded="true" />
           </folding>
