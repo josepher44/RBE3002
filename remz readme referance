@@ -1,0 +1,12 @@
+empty rviz launch
+
+	rosrun rviz rviz
+
+insert map into rviz
+
+	rosrun map_server map_server /path/to/map.yaml
+
+turtlebot minmal launch
+
+	roslaunch turtlebot_bringup minimal.launch --screen
+
