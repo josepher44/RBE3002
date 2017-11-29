@@ -41,6 +41,12 @@ def finalRollout (current_pose, goal, final_path, mapData):
 
 
 
+def finalRolloutButWithWaypoints (current_pose, waypoint):
+    return (distance_calculation(current_pose, waypoint), angle_pose_to_path(current_pose, waypoint))
+
+
+
+
 
 def newPose (parent, x, y):
     poseOut = Pose()
