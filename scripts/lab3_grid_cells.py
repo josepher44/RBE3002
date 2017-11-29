@@ -138,13 +138,11 @@ def publishWalls():
                         data.cells.append(addScaledPoint(j+k,i+m))
                         if(j+k>=0 and j+k<=width-1 and i+m>=0 and i+m<=height-1):
                             appended[i+m, j+k] = 100
-                            print("added a wall")
                     #print("Wrote cell at"+repr(i)+", "+repr(j))
     for i in range(0,height):
         for j in range(0,width):
             if appended[i,j]>50:
                 reshapedMap[i,j] = 100
-                print("wrote the new wall")
     print("Wrote wall cells")
     publishCells(wallpub,data)
 
@@ -152,8 +150,8 @@ def publishWalls():
 def publishChecked(checkedCells):
     data = GridCells()
 
-    for node in checkedCells:
-        data.cells.append(addScaledPoint(node.x, node.y))
+    #for node in checkedCells:
+    #    data.cells.append(addScaledPoint(node.x, node.y))
     publishCells(checkedpub, data)
 
 def publishOpen(openCells):
@@ -218,6 +216,7 @@ def run():
     initialize = True
     loopdone = False
     publishWalls()
+    deepPublish = 0
     global lists
 
     while (not loopdone and not rospy.is_shutdown()):
@@ -228,12 +227,16 @@ def run():
                 lists = AStarTemplate.aStar(poseStart, poseGoal, MapDataToAStar())
                 initialize=False
             else:
-                lists = AStarTemplate.aStarLoop(lists['openset'],lists['closedset'],lists['closedpoints'],lists['finalpath'])
+                lists = AStarTemplate.aStarLoop(lists['openset'],lists['closedset'],lists['closedpoints'],lists['closedarray'],lists['openarray'],lists['finalpath'])
                 if len(lists['finalpath'])>0:
                     loopdone=True
                     print ("Escaped the for loop")
             publishChecked(lists['closedset'])
             publishOpen(lists['openset'])
+            deepPublish = deepPublish+1
+            if(deepPublish>=100):
+                #publishWalls()
+                deepPublish=0
         #rospy.sleep(0.002)
     print ("Really escaped the for loop")
     emptySet = set()
