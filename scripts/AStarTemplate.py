@@ -27,6 +27,21 @@ Authors: Wikipedia, Connor Flanigan
 """
 
 
+def drive(current_pose, waypoint)):
+    s, t = finalRolloutButWithWaypoints (current_pose, waypoint):
+    publishTwist(s, t)
+
+
+
+def publishTwist(self, lin_Vel, ang_Vel):
+    print('publishing')
+    msg = Twist()
+    msg.linear.x = lin_Vel
+    msg.angular.z = ang_Vel
+    self._vel_pub.publish(msg)
+    print('published')
+
+
 
 def finalRollout (current_pose, goal, final_path, mapData):
     for v, w in zip(final_path[:-1], final_path[1:]):
@@ -42,6 +57,16 @@ def finalRollout (current_pose, goal, final_path, mapData):
 
 
 def finalRolloutButWithWaypoints (current_pose, waypoint):
+    s = distance_calculation(current_pose, waypoint)
+    if (s > 1):
+        s = 1
+        
+    t = angle_pose_to_path(current_pose, waypoint)
+    if (t > 1):
+        t = 1
+    else if (t < -1):
+        t = -1
+    
     return (distance_calculation(current_pose, waypoint), angle_pose_to_path(current_pose, waypoint))
 
 
