@@ -40,7 +40,7 @@ def mapCallBack(data):
     global resolution
     global offsetX
     global offsetY
-    global recalcFlag = TRUE
+    global recalcFlag = True
 
     mapgrid = data
 
