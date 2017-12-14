@@ -24,6 +24,9 @@ def __init():
      global hasGoal
      global allFrontiers
      global allCentroids
+     global odom_list
+     #global odom_tf
+     pose = Pose()
      allFrontiers = list()
      allCentroids = list()
      hasStart = False
@@ -31,18 +34,26 @@ def __init():
      mapDataOut = GridCells()
      wallDataOut = GridCells()
      checkedDataOut = GridCells()
-     global odom_tf
-     global odom_list
-     odom_list = tf.TransformListener()
+     rospy.Timer(rospy.Duration(.01), tCallback) # timer callback for robot location
+     odom_list = tf.TransformListener() #listner for robot location
+        
+def tCallback(event):
+	
+    global pose
+    global xPosition
+    global yPosition
+    global theta
 
-
-
-def getpose():
-    global odom_list
-    pose = Pose()
     odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(1.0))
     (position, orientation) = odom_list.lookupTransform('map','base_footprint', rospy.Time(0))
-    return position.pose.pose
+    pose.position.x=position[0]
+    pose.position.y=position[1]
+    # the previous 2 lines and next 2 lines are repedative. Joes bad
+    xPosition=position[0]
+    yPosition=position[1]
+
+    odomW = orientation
+    q = [odomW[0], odomW[1], odomW[2], odomW[3]]
 
 # reads in global map
 def mapCallBack(data):
