@@ -31,23 +31,18 @@ def __init():
      mapDataOut = GridCells()
      wallDataOut = GridCells()
      checkedDataOut = GridCells()
-    global odom_tf
-    global odom_list
-    odom_list = tf.TransformListener()
+     global odom_tf
+     global odom_list
+     odom_list = tf.TransformListener()
 
-def getx():
+
+
+def getpose():
     global odom_list
     pose = Pose()
     odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(1.0))
-    (position, orientation) = odom_list.lookupTransform('map','base_footprint'', rospy.Time(0))
-    return position.pose.pose.position.x
-                                                        
-def gety():
-    global odom_list
-    pose = Pose()
-    odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(1.0))
-    (position, orientation) = odom_list.lookupTransform('map','base_footprint'', rospy.Time(0))
-    return position.pose.pose.position.y
+    (position, orientation) = odom_list.lookupTransform('map','base_footprint', rospy.Time(0))
+    return position.pose.pose
 
 # reads in global map
 def mapCallBack(data):
@@ -96,6 +91,12 @@ class xy(object):
 def gridFromPose(pose):
     gridx = int((pose.position.x - offsetX - (.5 * resolution)) / resolution)
     gridy = int((pose.position.y - offsetY - (.5 * resolution)) / resolution)
+    return xy(gridx,gridy)
+
+def gridFromXY(x, y):
+    gridx = int((x - offsetX - (.5 * resolution)) / resolution)
+    gridy = int((y - offsetY - (.5 * resolution)) / resolution)
+    return xy(gridx,gridy)
 
 def readGoal(goal):
     global hasGoal
@@ -347,6 +348,8 @@ def publishWalls():
 
 def publishTarget():
     data = GridCells()
+    x= gridFromXY(getx()).x
+    y= gridFromXY(gety()).y
     point = minimumFrontier(150,280)
     for i in range(point.x-1,point.x+2):
         for j in range(point.y-1,point.y+2):
