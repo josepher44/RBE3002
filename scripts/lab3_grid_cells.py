@@ -22,6 +22,8 @@ def __init():
      global openDataOut
      global hasStart
      global hasGoal
+     global allFrontiers
+     allFrontiers = list()
      hasStart = False
      hasGoal = False
      mapDataOut = GridCells()
@@ -68,7 +70,10 @@ class MapDataToAStar:
         self._resolution = resolution
         self._reshapedMap = reshapedMap
 
-
+class xy(object):
+    def __init__(self, X, Y):
+        self.x = X
+        self.y = Y
 
 def gridFromPose(pose):
     gridx = int((pose.position.x - offsetX - (.5 * resolution)) / resolution)
@@ -135,10 +140,10 @@ def getUnknown(x,y):
 
 def getFree(x,y):
     if reshapedMap[x,y]>-0.5 and reshapedMap[x,y]<1:
-        print("Freedom!")
+        #print("Freedom!")
         return True
     else:
-        print("Communists!")
+        #print("Communists!")
         return False
 
 def getFrontier(x,y):
@@ -146,9 +151,16 @@ def getFrontier(x,y):
         for i in range(x-1, x+2):
             for k in range(y-1, y+2):
                 if getFree(i,k):
+                    #reshapedMap[x, y]=20
                     return True
 
     return False
+
+def getFrontierMap(x,y):
+    if reshapedMap[x,y]>10 and reshapedMap[x,y]<30:
+        return True
+    else:
+        return False
 
 
 
@@ -168,17 +180,139 @@ def getTrueWall(x,y):
         return True
 
 def publishNavFrontier():
+    global reshapedMap
     data = GridCells()
+    executioncount = 0
+    frontiercount = 0
     for i in range(0,height-1):
         for k in range(0,width-1):
-            print("Tried a frontier at")
-            print(i)
-            print(k)
+            #print("Tried a frontier at")
+            #print(i)
+            #print(k)
+            executioncount = executioncount+1
+            #print(executioncount)
             if getFrontier(i,k):
                 data.cells.append(addScaledPoint(k,i))
+                reshapedMap[i, k] = 20
+                print(reshapedMap[i,k])
+                allFrontiers.append(xy(i,k))
+                print("Found a frontier")
+                frontiercount = frontiercount+1
+                print(frontiercount)
+                print(allFrontiers.__len__())
     publishCells(navfrontierpub,data)
     print("Published frontiers")
+    print("Total frontier count is")
+    print(frontiercount)
+    print allFrontiers.__len__()
 
+def elementInSet(set, x,y):
+    for ele in set:
+        if ele.x is x and ele.y is y:
+            return True
+    return False
+
+def generateSubFrontiers():
+    countbymap = 0
+    for e in range (0,height-1):
+        for f in range(0,width-1):
+            if (getFrontierMap(e,f)):
+                print("found a frontier via mapping")
+                countbymap = countbymap+1
+                print(countbymap)
+
+
+
+    workingSet = copy.deepcopy(allFrontiers)
+    deepflag = False
+    #for element in workingSet:
+        #print("have a frontier at")
+        #print (element.x)
+        #print (element.y)
+        #print ("working set size is")
+        #print (workingSet.__len__())
+    allFrontierSegments = list()
+
+    while workingSet.__len__()>0:
+        startLocation = workingSet.pop()
+
+        frontier_in_yo_frontier = list()
+        frontier_in_yo_frontier.append(startLocation)
+        subFrontier = list()
+        while frontier_in_yo_frontier.__len__()>0:
+            print("frontiers in yo frontier: ")
+            print(frontier_in_yo_frontier.__len__())
+            print("running the frontier in yo frontier while loop")
+            for element in frontier_in_yo_frontier:
+                subFrontier.append(element)
+                for element2 in workingSet:
+                    if element2.x is element.x and element2.y is element.y:
+                        workingSet.remove(element2)
+                        print("removed an element via the element2 loop")
+                frontier_in_yo_frontier.remove(element)
+                print("removed element from frontier in yo frontier")
+                #print(element.x)
+                #print(element.y)
+
+                for i in range(-1, 2):
+                    for j in range(-1, 2):
+                        print(element.x+i)
+                        print(element.y+j)
+                        if getFrontierMap(element.x+i,element.y+j) is True:
+                            frontier_in_yo_frontier.append(xy(element.x + i, element.y + j))
+                            reshapedMap[element.x+i, element.y+j] = 5
+
+                            #if element3.x == element.x+i and element3.y == element.y+j:
+
+
+                                #print("added element")
+                                #print(element.x+i)
+                                #print(element.y+j)
+                #print("frontiers in yo frontier: ")
+                #print(frontier_in_yo_frontier.__len__()))
+
+        allFrontierSegments.append(copy.deepcopy(subFrontier))
+        print("Added a sub frontier of size")
+        print(subFrontier.__len__())
+    print("finished adding frontiers, frontier count is")
+    print(allFrontierSegments.__len__())
+    return allFrontierSegments
+
+
+
+
+
+
+def expandWalls():
+    appended = copy.deepcopy(reshapedMap)
+    for i in range(0,height):
+        for j in range(0,width):
+            if getTrueWall(i,j):
+                for k in range(-3,4):
+                    for m in range(-3,4):
+
+                        if(j+k>=0 and j+k<=width-1 and i+m>=0 and i+m<=height-1):
+                            if reshapedMap[i+m,j+k]<99:
+                                reshapedMap[i+m, j+k] = 80
+                                appended[i+m, j+k] = 80
+
+def publishCentroids():
+    data = GridCells()
+    listOfFrontiers = generateSubFrontiers()
+    print("publishing centroids now")
+    print(listOfFrontiers.__len__())
+    for element in listOfFrontiers:
+        xavg=0
+        yavg=0
+        for node in element:
+            xavg = xavg+node.x
+            yavg = yavg+node.y
+        xavg=xavg/element.__len__()
+        yavg=yavg/element.__len__()
+        #print(xavg)
+        #print(yavg)
+        data.cells.append(addScaledPoint(yavg, xavg))
+    publishCells(frontiercentroidpub, data)
 
 def publishWalls():
     data = GridCells()
@@ -189,16 +323,6 @@ def publishWalls():
         for j in range(0,width):
             if getTrueWall(i,j):
                 data.cells.append(addScaledPoint(j, i))
-                for k in range(-3,4):
-                    for m in range(-3,4):
-
-                        if(j+k>=0 and j+k<=width-1 and i+m>=0 and i+m<=height-1):
-                            appended[i+m, j+k] = 80
-                    #print("Wrote cell at"+repr(i)+", "+repr(j))
-    for i in range(0,height):
-        for j in range(0,width):
-            if appended[i,j]>50:
-                reshapedMap[i,j] = 80
     print("Wrote wall cells")
     publishCells(wallpub,data)
 
@@ -206,7 +330,7 @@ def publishExpandedWalls():
     data = GridCells()
     for i in range(0,height):
         for j in range(0,width):
-            if getWall(i,j):
+            if getWall(i,j) and not getTrueWall(i,j):
                 data.cells.append(addScaledPoint(j, i))
     publishCells(exwallpub, data)
 
@@ -261,12 +385,14 @@ def run():
     global openpub
     global pathpub
     global navfrontierpub
+    global frontiercentroidpub
     rospy.init_node('lab3')
     sub = rospy.Subscriber("/map", OccupancyGrid, mapCallBack)
     pub = rospy.Publisher("/map_check", GridCells, queue_size=1)
     wallpub = rospy.Publisher("/walls", GridCells, queue_size=1)
     exwallpub = rospy.Publisher("/exwalls", GridCells, queue_size=1)
     navfrontierpub = rospy.Publisher("/navfrontier", GridCells, queue_size=1)
+    frontiercentroidpub = rospy.Publisher("/frontiercentroid", GridCells, queue_size=1)
     pubway = rospy.Publisher("/waypoints", GridCells, queue_size=1)
     checkedpub = rospy.Publisher("/checked", GridCells, queue_size=1)
     openpub = rospy.Publisher("/frontier", GridCells, queue_size=1)
@@ -283,9 +409,12 @@ def run():
     time=0
     initialize = True
     loopdone = False
+    expandWalls()
+    #publishExpandedWalls()
     publishWalls()
-    publishExpandedWalls()
     publishNavFrontier()
+    rospy.sleep(1)
+    publishCentroids()
     global lists
 
     while (1 and not rospy.is_shutdown()):
@@ -306,10 +435,6 @@ def run():
                             print ("Escaped the for loop")
                     publishChecked(lists['closedset'])
                     publishOpen(lists['openset'])
-                    deepPublish = deepPublish+1
-                    if(deepPublish>=100):
-                        #publishWalls()
-                        deepPublish=0
                 #rospy.sleep(0.002)
         print ("Really escaped the for loop")
         emptySet = set()
