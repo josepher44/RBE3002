@@ -53,6 +53,7 @@ def mapCallBack(data):
     print(height)
     a = np.array(data.data)
     reshapedMap = np.reshape(a, (height, width))
+    print(mapData)
     offsetX = data.info.origin.position.x
     offsetY = data.info.origin.position.y
     #print data.info
@@ -123,6 +124,57 @@ def getWall(x,y):
     else:
         return True
 
+def getUnknown(x,y):
+    if reshapedMap[x,y]>-1:
+        return False
+    else:
+        return True
+
+def getFree(x,y):
+    if reshapedMap[x,y]>-0.5 and reshapedMap[x,y]<1:
+        print("Freedom!")
+        return True
+    else:
+        print("Communists!")
+        return False
+
+def getFrontier(x,y):
+    if getUnknown(x,y):
+        for i in range(x-1, x+2):
+            for k in range(y-1, y+2):
+                if getFree(i,k):
+                    return True
+
+    return False
+
+
+
+def getFrontierTermination(x, y):
+    for i in range(x - 1, x + 2):
+        for k in range(y - 1, y + 2):
+            if (getWall(i,k)):
+                return True
+
+    return False
+
+
+def getTrueWall(x,y):
+    if reshapedMap[x,y]<99:
+        return False
+    else:
+        return True
+
+def publishNavFrontier():
+    data = GridCells()
+    for i in range(0,height-1):
+        for k in range(0,width-1):
+            print("Tried a frontier at")
+            print(i)
+            print(k)
+            if getFrontier(i,k):
+                data.cells.append(addScaledPoint(k,i))
+    publishCells(navfrontierpub,data)
+    print("Published frontiers")
 
 
 def publishWalls():
@@ -132,26 +184,35 @@ def publishWalls():
 
     for i in range(0,height):
         for j in range(0,width):
-            if getWall(i,j):
+            if getTrueWall(i,j):
+                data.cells.append(addScaledPoint(j, i))
                 for k in range(-3,4):
                     for m in range(-3,4):
-                        data.cells.append(addScaledPoint(j+k,i+m))
+
                         if(j+k>=0 and j+k<=width-1 and i+m>=0 and i+m<=height-1):
-                            appended[i+m, j+k] = 100
+                            appended[i+m, j+k] = 80
                     #print("Wrote cell at"+repr(i)+", "+repr(j))
     for i in range(0,height):
         for j in range(0,width):
             if appended[i,j]>50:
-                reshapedMap[i,j] = 100
+                reshapedMap[i,j] = 80
     print("Wrote wall cells")
     publishCells(wallpub,data)
+
+def publishExpandedWalls():
+    data = GridCells()
+    for i in range(0,height):
+        for j in range(0,width):
+            if getWall(i,j):
+                data.cells.append(addScaledPoint(j, i))
+    publishCells(exwallpub, data)
 
 
 def publishChecked(checkedCells):
     data = GridCells()
 
-    #for node in checkedCells:
-    #    data.cells.append(addScaledPoint(node.x, node.y))
+    for node in checkedCells:
+        data.cells.append(addScaledPoint(node.x, node.y))
     publishCells(checkedpub, data)
 
 def publishOpen(openCells):
@@ -190,22 +251,26 @@ def run():
 
     global pub
     global wallpub
+    global exwallpub
     global checkedpub
     global start_sub
     global goal_sub
     global openpub
     global pathpub
+    global navfrontierpub
     rospy.init_node('lab3')
     sub = rospy.Subscriber("/map", OccupancyGrid, mapCallBack)
     pub = rospy.Publisher("/map_check", GridCells, queue_size=1)
     wallpub = rospy.Publisher("/walls", GridCells, queue_size=1)
+    exwallpub = rospy.Publisher("/exwalls", GridCells, queue_size=1)
+    navfrontierpub = rospy.Publisher("/navfrontier", GridCells, queue_size=1)
     pubway = rospy.Publisher("/waypoints", GridCells, queue_size=1)
     checkedpub = rospy.Publisher("/checked", GridCells, queue_size=1)
     openpub = rospy.Publisher("/frontier", GridCells, queue_size=1)
     pathpub = rospy.Publisher("/pathtotravel", GridCells, queue_size=1)
     pubfrontier = rospy.Publisher("/frontier", GridCells, queue_size=1)
-    goal_sub = rospy.Subscriber('/move_base_simple/goal2', PoseStamped, readGoal, queue_size=1) #change topic for best results
-    start_sub = rospy.Subscriber('/initialpose2', PoseWithCovarianceStamped, readStart, queue_size=1) #change topic for best results
+    goal_sub = rospy.Subscriber('/move_base_simple/goal', PoseStamped, readGoal, queue_size=1) #change topic for best results
+    start_sub = rospy.Subscriber('/initialpose', PoseWithCovarianceStamped, readStart, queue_size=1) #change topic for best results
 
 
 
@@ -216,7 +281,8 @@ def run():
     initialize = True
     loopdone = False
     publishWalls()
-    deepPublish = 0
+    publishExpandedWalls()
+    publishNavFrontier()
     global lists
 
     while (not loopdone and not rospy.is_shutdown()):
@@ -233,10 +299,7 @@ def run():
                     print ("Escaped the for loop")
             publishChecked(lists['closedset'])
             publishOpen(lists['openset'])
-            deepPublish = deepPublish+1
-            if(deepPublish>=100):
-                #publishWalls()
-                deepPublish=0
+
         #rospy.sleep(0.002)
     print ("Really escaped the for loop")
     emptySet = set()
