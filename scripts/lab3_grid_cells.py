@@ -30,6 +30,17 @@ def __init():
      wallDataOut = GridCells()
      checkedDataOut = GridCells()
 
+def getx():
+    pose = Pose()
+    odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(1.0))
+    (position, orientation) = odom_list.lookupTransform('map','base_footprint'', rospy.Time(0))
+    return position.pose.pose.position.x
+                                                        
+def gety():
+    pose = Pose()
+    odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(1.0))
+    (position, orientation) = odom_list.lookupTransform('map','base_footprint'', rospy.Time(0))
+    return position.pose.pose.position.y
 
 # reads in global map
 def mapCallBack(data):
