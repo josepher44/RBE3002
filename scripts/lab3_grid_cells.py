@@ -348,9 +348,7 @@ def publishWalls():
 
 def publishTarget():
     data = GridCells()
-    x= gridFromXY(getx()).x
-    y= gridFromXY(gety()).y
-    point = minimumFrontier(150,280)
+    point = minimumFrontier(150,80)
     for i in range(point.x-1,point.x+2):
         for j in range(point.y-1,point.y+2):
             data.cells.append(addScaledPoint(j,i))
