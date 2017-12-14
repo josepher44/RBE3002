@@ -26,6 +26,21 @@ Authors: Wikipedia, Connor Flanigan
 """
 
 
+
+'''
+def initMSG(self):
+
+
+    """
+        This constructor sets up class variables and pubs/subs
+    """
+    self._current = Pose()  # initlize correctly 
+    self._odom_list = tf.TransformListener()
+    rospy.Timer(rospy.Duration(.1), self.timerCallback)
+    self._vel_pub = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, queue_size=1)
+'''
+
+
 """
 def drive(current_pose, waypoint):
     s, t = finalRolloutButWithWaypoints (current_pose, waypoint):

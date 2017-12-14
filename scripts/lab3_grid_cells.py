@@ -40,7 +40,10 @@ def mapCallBack(data):
     global resolution
     global offsetX
     global offsetY
-
+    global recalcFlag
+    
+    
+    recalcFlag = True
     mapgrid = data
 
     resolution = data.info.resolution
@@ -285,25 +288,32 @@ def run():
     publishNavFrontier()
     global lists
 
-    while (not loopdone and not rospy.is_shutdown()):
-         #publishing map data every 2 seconds
-
-        if hasGoal and hasStart:
-            if (initialize):
-                lists = AStarTemplate.aStar(poseStart, poseGoal, MapDataToAStar())
-                initialize=False
-            else:
-                lists = AStarTemplate.aStarLoop(lists['openset'],lists['closedset'],lists['closedpoints'],lists['closedarray'],lists['openarray'],lists['finalpath'])
-                if len(lists['finalpath'])>0:
-                    loopdone=True
-                    print ("Escaped the for loop")
-            publishChecked(lists['closedset'])
-            publishOpen(lists['openset'])
-
-        #rospy.sleep(0.002)
-    print ("Really escaped the for loop")
-    emptySet = set()
     while (1 and not rospy.is_shutdown()):
+        if (recalcFlag == True):
+            initialize = True
+            loopdone = False
+            while (not loopdone and not rospy.is_shutdown()):
+                 #publishing map data every 2 seconds
+        
+                if hasGoal and hasStart:
+                    if (initialize):
+                        lists = AStarTemplate.aStar(poseStart, poseGoal, MapDataToAStar())
+                        initialize=False
+                    else:
+                        lists = AStarTemplate.aStarLoop(lists['openset'],lists['closedset'],lists['closedpoints'],lists['closedarray'],lists['openarray'],lists['finalpath'])
+                        if len(lists['finalpath'])>0:
+                            loopdone=True
+                            print ("Escaped the for loop")
+                    publishChecked(lists['closedset'])
+                    publishOpen(lists['openset'])
+                    deepPublish = deepPublish+1
+                    if(deepPublish>=100):
+                        #publishWalls()
+                        deepPublish=0
+                #rospy.sleep(0.002)
+        print ("Really escaped the for loop")
+        emptySet = set()
+    
         publishChecked(emptySet)
         publishOpen(emptySet)
         publishPath(lists['finalpath'])
