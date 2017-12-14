@@ -29,14 +29,19 @@ def __init():
      mapDataOut = GridCells()
      wallDataOut = GridCells()
      checkedDataOut = GridCells()
+    global odom_tf
+    global odom_list
+    odom_list = tf.TransformListener()
 
 def getx():
+    global odom_list
     pose = Pose()
     odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(1.0))
     (position, orientation) = odom_list.lookupTransform('map','base_footprint'', rospy.Time(0))
     return position.pose.pose.position.x
                                                         
 def gety():
+    global odom_list
     pose = Pose()
     odom_list.waitForTransform('map', 'base_footprint', rospy.Time(0), rospy.Duration(1.0))
     (position, orientation) = odom_list.lookupTransform('map','base_footprint'', rospy.Time(0))
