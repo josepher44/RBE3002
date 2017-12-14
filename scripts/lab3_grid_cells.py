@@ -23,7 +23,9 @@ def __init():
      global hasStart
      global hasGoal
      global allFrontiers
+     global allCentroids
      allFrontiers = list()
+     allCentroids = list()
      hasStart = False
      hasGoal = False
      mapDataOut = GridCells()
@@ -312,6 +314,7 @@ def publishCentroids():
         #print(xavg)
         #print(yavg)
         data.cells.append(addScaledPoint(yavg, xavg))
+        allCentroids.append(xy(xavg,yavg))
     publishCells(frontiercentroidpub, data)
 
 def publishWalls():
@@ -325,6 +328,14 @@ def publishWalls():
                 data.cells.append(addScaledPoint(j, i))
     print("Wrote wall cells")
     publishCells(wallpub,data)
+
+def publishTarget():
+    data = GridCells()
+    point = minimumFrontier(150,280)
+    for i in range(point.x-1,point.x+2):
+        for j in range(point.y-1,point.y+2):
+            data.cells.append(addScaledPoint(j,i))
+    publishCells(targetcentroidpub, data)
 
 def publishExpandedWalls():
     data = GridCells()
@@ -370,6 +381,19 @@ def publishCells(publisher, data):
     data.cell_height = resolution
     publisher.publish(data)
 
+def distanceBetweenPoints(x1, y1, x2, y2):
+    return (math.sqrt((x1-x2)**2 + (y1-y2)**2))
+
+def minimumFrontier(xcomp, ycomp):
+    minimum = 999999999
+
+    for point in allCentroids:
+        if distanceBetweenPoints(xcomp, ycomp, point.x, point.y) <minimum:
+            minimum = distanceBetweenPoints(xcomp, ycomp, point.x, point.y)
+            pointout = copy.deepcopy(point)
+    return pointout
+
+
 
 
 #Main handler of the project
@@ -386,6 +410,7 @@ def run():
     global pathpub
     global navfrontierpub
     global frontiercentroidpub
+    global targetcentroidpub
     rospy.init_node('lab3')
     sub = rospy.Subscriber("/map", OccupancyGrid, mapCallBack)
     pub = rospy.Publisher("/map_check", GridCells, queue_size=1)
@@ -393,6 +418,7 @@ def run():
     exwallpub = rospy.Publisher("/exwalls", GridCells, queue_size=1)
     navfrontierpub = rospy.Publisher("/navfrontier", GridCells, queue_size=1)
     frontiercentroidpub = rospy.Publisher("/frontiercentroid", GridCells, queue_size=1)
+    targetcentroidpub = rospy.Publisher("/targetcentroid", GridCells, queue_size=1)
     pubway = rospy.Publisher("/waypoints", GridCells, queue_size=1)
     checkedpub = rospy.Publisher("/checked", GridCells, queue_size=1)
     openpub = rospy.Publisher("/frontier", GridCells, queue_size=1)
@@ -415,6 +441,7 @@ def run():
     publishNavFrontier()
     rospy.sleep(1)
     publishCentroids()
+    publishTarget()
     global lists
 
     while (1 and not rospy.is_shutdown()):
